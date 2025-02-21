@@ -1,0 +1,18 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="quiz-container">
+    <h2>Quiz Completed!</h2>
+    <p>You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong>!</p>
+    
+    {% if score == total %}
+        <p>🎉 Perfect score! You're a genius! 🏆</p>
+    {% elif score > total|divisibleby:2 %}
+        <p>🔥 Great job! Keep improving! 🚀</p>
+    {% else %}
+        <p>🤔 Keep practicing, you'll get there! 💪</p>
+    {% endif %}
+
+    <a href="{% url 'home' %}" class="submit-btn">Back to Home</a>
+</div>
+{% endblock %}
