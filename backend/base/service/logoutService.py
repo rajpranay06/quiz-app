@@ -1,12 +1,12 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.contrib.auth import logout
-from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.contrib import messages
 
 
 # API - http://127.0.0.1:8000/logout/
-@csrf_exempt
-@api_view(['POST'])
 def logoutUser(request):
     logout(request)
-    return Response({"message": "Logout successful"}, status=200)
+    return redirect('home')

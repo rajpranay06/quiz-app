@@ -13,6 +13,8 @@ urlpatterns = [
     path('join_quiz/', quizService.join_quiz, name='join_quiz'),
     path('play_quiz/<int:quiz_id>/', quizService.play_quiz, name='play_quiz'),  # Make sure this exists!
     path('submit_quiz/<int:quiz_id>/', quizService.submit_quiz, name='submit_quiz'),
+    path('update_quiz/<int:quiz_id>/', quizService.update_quiz, name='update_quiz'),
+    path('lobby/update_quiz_list', quizService.update_quiz_list, name='update_quiz_list'),
 
     path('lobby/', lobbyPage.lobby, name="lobby"),
     path('', homePage.home, name='home'),

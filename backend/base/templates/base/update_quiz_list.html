@@ -1,0 +1,19 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="quiz-list-container">
+    <h2>Your Quizzes</h2>
+    {% if quizzes %}
+        <ul>
+            {% for quiz in quizzes %}
+                <li>
+                    {{ quiz.title }} - 
+                    <a href="{% url 'update_quiz' quiz_id=quiz.id %}">✏️ Edit</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>You haven't created any quizzes yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

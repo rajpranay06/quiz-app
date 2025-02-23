@@ -1,61 +1,55 @@
 {% extends 'main.html' %}
 
 {% block content %}
-
-<style> 
+<style>
     .lobby-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 80vh;
+        max-width: 700px;
+        margin: auto;
+        padding: 20px;
         text-align: center;
-    }
-
-    .lobby-container p {
-        font-size: 1.5rem;
-        color: #333;
-        margin-bottom: 20px;
+        background: #f4f4f4;
+        border-radius: 10px;
     }
 
     .btn-container {
         display: flex;
-        gap: 20px;
+        flex-direction: column;
+        gap: 15px;
         margin-top: 20px;
     }
 
-    .btn-container a {
-        text-decoration: none; /* Remove underline */
-    }
-
-    .quiz-button {
-        background-color: #ff4757;
+    .btn-container a button {
+        background-color: #1e90ff;
         color: white;
-        padding: 15px 30px;
-        font-size: 1.2rem;
-        border: none;
-        cursor: pointer;
+        padding: 10px 20px;
         border-radius: 5px;
-        transition: 0.3s;
+        cursor: pointer;
+        border: none;
+        font-size: 16px;
     }
 
-    .quiz-button:hover {
-        background-color: #e84118;
+    .btn-container a button:hover {
+        background-color: #0f68b3;
     }
 </style>
 
 <div class="lobby-container">
-    <p>Choose your path: Be the quiz master or challenge your knowledge!</p>
-    
-    <div class="btn-container">
-        <a href="{% url 'create_quiz' %}">
-            <button class="quiz-button">📝 Create a Quiz</button>
-        </a>
+    <h2>Welcome to the Quiz Lobby!</h2>
+    <p>Choose your path: Create, Join, or Update your quizzes.</p>
 
-        <a href="{% url 'join_quiz' %}">
-            <button class="quiz-button">🎮 Join a Quiz</button>
-        </a>
+    <div class="btn-container">
+        <a href="{% url 'create_quiz' %}"><button>📝 Create a Quiz</button></a>
+        <a href="{% url 'join_quiz' %}"><button>🎮 Join a Quiz</button></a>
+        <a href="{% url 'update_quiz_list' %}"><button>✏️ Update My Quizzes</button></a>
     </div>
 </div>
+
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
 
 {% endblock %}

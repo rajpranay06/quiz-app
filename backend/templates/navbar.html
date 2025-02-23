@@ -2,7 +2,7 @@
     <h1>🧠 Mind Clash 🧠</h1>
 </a>
 
-{% comment %} <form method="GET" action="{% url 'home' %}">
+<form method="GET" action="{% url 'home' %}">
     <input type="text" name="q" placeholder="Search rooms..."/>
 </form>
 
@@ -10,6 +10,6 @@
     <a href="{% url 'logout' %}">Logout</a>
 {% else %}
     <a href="{% url 'login' %}">Login</a>
-{% endif %} {% endcomment %}
+{% endif %}
 
 <hr>

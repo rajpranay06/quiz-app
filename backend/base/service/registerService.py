@@ -1,9 +1,11 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from django.contrib import messages
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.contrib.auth import login
-from django.views.decorators.csrf import csrf_exempt
 from ..forms import CustomUserCreationForm
 import json
 
@@ -20,22 +22,23 @@ register_schema = openapi.Schema(
 )
 
 # API - http://127.0.0.1:8000/register/  (POST request)
-@csrf_exempt
-@swagger_auto_schema(method='post', request_body=register_schema, responses={201: "Registration successful", 400: "Registration failed"})
-@api_view(['POST'])
 def registerPage(request):
     """
     User registration API.
     """
-    data = request.data
-    form = CustomUserCreationForm(data)
+    form  = CustomUserCreationForm()
+    
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
 
-    if form.is_valid():
-        user = form.save(commit=False)
-        user.username = user.username.lower()
-        user.save()
-        login(request, user)
-        return Response({"message": "Registration successful", "user": user.username}, status=201)
-    else:
-        errors = form.errors.as_json()
-        return Response({"error": "Registration failed", "details": errors}, status=400)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('lobby')
+        else:
+            messages.error(request, 'Registration failed')
+            
+    context = {"form": form}
+    return render(request, 'base/login_register.html', context)

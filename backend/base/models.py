@@ -24,3 +24,18 @@ class Question(models.Model):
 
     def __str__(self):
         return self.text
+    
+
+
+class QuizAttempt(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey('Quiz', on_delete=models.CASCADE)
+    score = models.IntegerField()
+    attempts = models.IntegerField(default=0)  # ➡️ Track attempts
+    attempted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'quiz')  # Prevent duplicate entries
+
+    def __str__(self):
+        return f"{self.user.username} - {self.quiz.title} - {self.attempts} Attempt(s)"
