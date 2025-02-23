@@ -1,0 +1,55 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+    .lobby-container {
+        max-width: 700px;
+        margin: auto;
+        padding: 20px;
+        text-align: center;
+        background: #f4f4f4;
+        border-radius: 10px;
+    }
+
+    .btn-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .btn-container a button {
+        background-color: #1e90ff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        border: none;
+        font-size: 16px;
+    }
+
+    .btn-container a button:hover {
+        background-color: #0f68b3;
+    }
+</style>
+
+<div class="lobby-container">
+    <h2>Welcome to the Quiz Lobby!</h2>
+    <p>Choose your path: Create, Join, or Update your quizzes.</p>
+
+    <div class="btn-container">
+        <a href="{% url 'create_quiz' %}"><button>📝 Create a Quiz</button></a>
+        <a href="{% url 'join_quiz' %}"><button>🎮 Join a Quiz</button></a>
+        <a href="{% url 'update_quiz_list' %}"><button>✏️ Update My Quizzes</button></a>
+    </div>
+</div>
+
+{% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+{% endif %}
+
+{% endblock %}

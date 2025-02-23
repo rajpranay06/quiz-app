@@ -1,0 +1,10 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<h2>Add Questions to {{ quiz.title }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ question_form.as_p }}
+    <button type="submit">Add Question</button>
+</form>
+{% endblock %}

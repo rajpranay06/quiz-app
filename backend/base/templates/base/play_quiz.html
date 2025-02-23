@@ -1,0 +1,85 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+    .quiz-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        text-align: center;
+        background: #f4f4f4;
+        border-radius: 10px;
+    }
+    h2 {
+        color: #333;
+    }
+    .question {
+        margin-bottom: 20px;
+    }
+    .options label {
+        display: block;
+        background: white;
+        padding: 10px;
+        margin: 5px 0;
+        border-radius: 5px;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        transition: background 0.3s, color 0.3s;
+    }
+    .options input {
+        display: none; /* Hide the default radio button */
+    }
+    /* Hover effect */
+    .options label:hover {
+        background: #e84118; /* Red color on hover */
+        color: white;
+    }
+    /* Selected option style */
+    .options input:checked + label {
+        background: #4caf50; /* Green color for selected option */
+        color: white;
+    }
+    .submit-btn {
+        background-color: #ff4757;
+        color: white;
+        padding: 10px 20px;
+        font-size: 1rem;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+    .submit-btn:hover {
+        background-color: #e84118;
+    }
+</style>
+
+<div class="quiz-container">
+    <h2>{{ quiz.title }}</h2>
+    <p>{{ quiz.description }}</p>
+
+    <form method="post" action="{% url 'submit_quiz' quiz.id %}">
+        {% csrf_token %}
+        {% for question in questions %}
+            <div class="question">
+                <h3>{{ question.text }}</h3>
+                <div class="options">
+                    <input type="radio" name="question_{{ question.id }}" value="1" id="option1_{{ question.id }}">
+                    <label for="option1_{{ question.id }}">{{ question.option1 }}</label>
+
+                    <input type="radio" name="question_{{ question.id }}" value="2" id="option2_{{ question.id }}">
+                    <label for="option2_{{ question.id }}">{{ question.option2 }}</label>
+
+                    <input type="radio" name="question_{{ question.id }}" value="3" id="option3_{{ question.id }}">
+                    <label for="option3_{{ question.id }}">{{ question.option3 }}</label>
+
+                    <input type="radio" name="question_{{ question.id }}" value="4" id="option4_{{ question.id }}">
+                    <label for="option4_{{ question.id }}">{{ question.option4 }}</label>
+                </div>
+            </div>
+        {% endfor %}
+        
+        <button type="submit" class="submit-btn">Submit Answers</button>
+    </form>
+</div>
+{% endblock %}
