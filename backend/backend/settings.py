@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'base.apps.BaseConfig',
     'drf_yasg',
     'rest_framework',
-
 ]
 
 MIDDLEWARE = [
@@ -64,6 +63,7 @@ SWAGGER_SETTINGS = {
     },
     'USE_SESSION_AUTH': False,
 }
+
 
 ROOT_URLCONF = 'backend.urls'
 

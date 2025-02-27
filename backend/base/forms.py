@@ -34,7 +34,7 @@ class QuestionForm(forms.ModelForm):
 
     class Meta:
         model = Question
-        fields = ['quiz', 'text', 'option1', 'option2', 'option3', 'option4', 'correct_option']
+        fields = ['text', 'option1', 'option2', 'option3', 'option4', 'correct_option']  # Removed 'quiz'
         widgets = {
             'text': forms.TextInput(attrs={'placeholder': 'Enter question text'}),
             'option1': forms.TextInput(attrs={'placeholder': 'Option 1'}),

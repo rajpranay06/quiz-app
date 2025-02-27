@@ -26,15 +26,25 @@ def create_quiz(request):
 @login_required
 def add_questions(request, quiz_id):
     quiz = Quiz.objects.get(id=quiz_id)
+    # Ensure only the quiz creator can add questions
+    if request.user != quiz.creator:
+        messages.error(request, "You are not allowed to add questions to this quiz.")
+        return redirect('lobby')
+    
     if request.method == "POST":
         question_form = QuestionForm(request.POST)
         if question_form.is_valid():
             question = question_form.save(commit=False)
             question.quiz = quiz
             question.save()
-            return redirect('add_questions', quiz_id=quiz.id)  # Reload to add another question
+            if 'complete_quiz' in request.POST:
+                return redirect('lobby')
+            else:
+                return redirect('add_questions', quiz_id=quiz.id)  # Reload to add another question
 
     else:
         question_form = QuestionForm()
 
     return render(request, 'base/add_questions.html', {"quiz": quiz, "question_form": question_form})
+    
+    

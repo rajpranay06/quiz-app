@@ -2,9 +2,26 @@
 
 {% block content %}
 <h2>Add Questions to {{ quiz.title }}</h2>
+
 <form method="post">
     {% csrf_token %}
     {{ question_form.as_p }}
-    <button type="submit">Add Question</button>
+    <button type="submit" name="add_question">Add Question</button>
+    <button type="submit" name="complete_quiz" class="complete-button">Submit and Complete Quiz</button>
 </form>
+
+<style>
+    .complete-button {
+        background-color: #4caf50; /* Green color for the complete button */
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-left: 10px;
+    }
+    .complete-button:hover {
+        background-color: #45a049; /* Darker green on hover */
+    }
+</style>
 {% endblock %}

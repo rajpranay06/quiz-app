@@ -8,52 +8,50 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 
-# API - http://127.0.0.1:8000/home/  (GET request)
+
  
-def quizGame(request):
-    return render(request, 'base/home.html', {})
-
-
-
 @api_view(['GET' , 'POST'])
 @login_required
 def join_quiz(request):
+    # Fetch all quizzes
+    quizzes = Quiz.objects.all()
+
     if request.method == "POST":
-        form = JoinQuizForm(request.POST)
-        if form.is_valid():
-            quiz_id = form.cleaned_data['quiz_id']
-            
+        # Get the selected quiz ID from the form
+        quiz_id = request.POST.get('quiz_id')
+        
+        if quiz_id:
             # Check if the quiz exists
             quiz = Quiz.objects.filter(id=quiz_id).first()
             
             if quiz:
                 return redirect('play_quiz', quiz_id=quiz.id)  # Redirect to the quiz page
             else:
-                messages.error(request, "Quiz ID not found. Please enter a valid ID.")
+                messages.error(request, "Quiz not found. Please select a valid quiz.")
+        else:
+            messages.error(request, "Please select a quiz to join.")
 
-    else:
-        form = JoinQuizForm()
-
-    return render(request, 'base/join_quiz.html', {"form": form})
+    # Render the join quiz page with the list of quizzes
+    return render(request, 'base/join_quiz.html', {"quizzes": quizzes})
 
 @login_required
 def play_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
     questions = quiz.questions.all()
 
-    # 🚫 Check if the user has already attempted the quiz
+    # Check if the user has already attempted the quiz
     attempt, created = QuizAttempt.objects.get_or_create(
         user=request.user,
         quiz=quiz,
         defaults={'attempts': 0, 'score': 0}  # Initialize with default values
     )
 
-    # 🚫 Prevent the user from retaking the quiz
+    # Prevent the user from retaking the quiz
     if attempt.attempts >= 1:
-        messages.error(request, "❌ You have already taken this quiz!")
+        messages.error(request, "You have already taken this quiz!")
         return redirect('lobby')
 
-    # ✅ Handle quiz submission
+    # Handle quiz submission
     if request.method == "POST":
         score = 0
         total_questions = questions.count()
@@ -64,10 +62,10 @@ def play_quiz(request, quiz_id):
             if selected_option and int(selected_option) == question.correct_option:
                 score += 1
 
-        # ➡️ Update the attempt record properly
-        attempt.attempts = 1  # ✅ Update the number of attempts
-        attempt.score = score  # ✅ Update the score
-        attempt.save()  # ✅ Save the updated attempt object
+        # Update the attempt record properly
+        attempt.attempts = 1  # Update the number of attempts
+        attempt.score = score  # Update the score
+        attempt.save()  # Save the updated attempt object
 
         # Render result page
         return render(request, 'base/quiz_result.html', {
@@ -76,7 +74,7 @@ def play_quiz(request, quiz_id):
             'total': total_questions
         })
 
-    # 🚀 Render the quiz page with questions
+    # Render the quiz page with questions
     return render(request, 'base/play_quiz.html', {
         'quiz': quiz,
         'questions': questions
@@ -168,3 +166,30 @@ def update_quiz(request, quiz_id):
         'quiz_form': quiz_form,
         'quiz': quiz
     })
+
+
+@login_required
+def delete_question(request, question_id):
+    question = get_object_or_404(Question, id=question_id)
+    
+    # Check if the quiz creator is deleting the question
+    if request.user != question.quiz.creator:
+        messages.error(request, "You can only delete questions from quizzes you created.")
+        return redirect('update_quiz', quiz_id=question.quiz.id)
+
+    question.delete()
+    messages.success(request, "Question deleted successfully.")
+    return redirect('update_quiz', quiz_id=question.quiz.id)
+
+@login_required
+def delete_quiz(request, quiz_id):
+    quiz = get_object_or_404(Quiz, id=quiz_id)
+
+    # Check if the user is the creator
+    if request.user != quiz.creator:
+        messages.error(request, "You can only delete quizzes you created.")
+        return redirect('lobby')
+
+    quiz.delete()
+    messages.success(request, "Quiz deleted successfully.")
+    return redirect('lobby')
