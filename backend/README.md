@@ -1,14 +1,4 @@
-# Backend
-
-This folder contains the backend logic for **MindClash: Battle of Wits**, built using **Python (Flask)** and **Socket.IO** for real-time communication.
-
-### **Features**
-- Handles player authentication and account management.
-- Manages game logic, including questions, challenges, and power-ups.
-- Enables real-time communication between players using Socket.IO.
-- Stores game data and player progress in a database.
-
-Commands to setup Django project
+# Commands to setup Django project
 
 install virtual environment
 $ python install virtualenv
@@ -30,4 +20,12 @@ $ python manage.py startapp app-name
 
 To execute SQL commands
 $ python manage.py migrate
+
+# Dependencies to install
+
+$ pip install drf-yasg
+
+$ pip install django-crispy-forms
+
+$ pip install django-centrib  
 
