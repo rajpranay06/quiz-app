@@ -1,10 +1,68 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h2>Create a Quiz</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ quiz_form.as_p }}
-    <button type="submit">Create Quiz</button>
-</form>
+<style>
+    .quiz-container {
+        max-width: 600px;
+        margin: auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+    }
+
+    h2 {
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .quiz-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        text-align: left;
+    }
+
+    .quiz-form input, .quiz-form select, .quiz-form textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #007bff;
+        border-radius: 5px;
+        font-size: 16px;
+        background-color: white;
+        transition: border 0.3s ease-in-out;
+    }
+
+    .quiz-form input:focus, .quiz-form select:focus, .quiz-form textarea:focus {
+        outline: none;
+        border: 2px solid #0056b3;
+        box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
+    }
+
+    .quiz-form button {
+        background-color: #007bff;
+        color: white;
+        font-size: 18px;
+        font-weight: bold;
+        padding: 12px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background 0.3s ease-in-out;
+    }
+
+    .quiz-form button:hover {
+        background-color: #0056b3;
+    }
+</style>
+
+<div class="quiz-container">
+    <h2>Create a New Quiz</h2>
+    <form method="post" class="quiz-form">
+        {% csrf_token %}
+        {{ quiz_form.as_p }}
+        <button type="submit">📝 Create Quiz</button>
+    </form>
+</div>
 {% endblock %}

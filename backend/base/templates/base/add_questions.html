@@ -1,27 +1,166 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h2>Add Questions to {{ quiz.title }}</h2>
-
-<form method="post">
-    {% csrf_token %}
-    {{ question_form.as_p }}
-    <button type="submit" name="add_question">Add Question</button>
-    <button type="submit" name="complete_quiz" class="complete-button">Submit and Complete Quiz</button>
-</form>
-
 <style>
-    .complete-button {
-        background-color: #4caf50; /* Green color for the complete button */
-        color: white;
-        padding: 10px 20px;
+    .question-container {
+        max-width: 700px;
+        margin: auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: left; 
+    }
+
+    h2 {
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .question-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .question-form input, 
+    .question-form select, 
+    .question-form textarea {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #007bff;
+        border-radius: 5px;
+        font-size: 16px;
+        background-color: white;
+        transition: border 0.3s ease-in-out;
+    }
+
+    .question-form input:focus, 
+    .question-form select:focus, 
+    .question-form textarea:focus {
+        outline: none;
+        border: 2px solid #0056b3;
+        box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
+    }
+
+    .button-group {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+    }
+
+    .add-button, .complete-button {
+        flex: 1;
+        padding: 12px;
+        font-size: 18px;
+        font-weight: bold;
         border: none;
         border-radius: 5px;
         cursor: pointer;
-        margin-left: 10px;
+        transition: background 0.3s ease-in-out;
     }
+
+    .add-button {
+        background-color: #007bff;
+        color: white;
+        margin-right: 10px;
+    }
+
+    .add-button:hover {
+        background-color: #0056b3;
+    }
+
+    .complete-button {
+        background-color: #4caf50;
+        color: white;
+    }
+
     .complete-button:hover {
-        background-color: #45a049; /* Darker green on hover */
+        background-color: #45a049;
+    }
+
+    .radio-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 10px;
+    }
+    
+    .radio-option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
+        background-color: white;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+        width: 100%;
+    }
+    
+    .radio-option:hover {
+        background-color: #f1f1f1;
+    }
+    
+    .radio-option input[type="radio"] {
+        margin: 0;
+        cursor: pointer;
+        order: 2; 
+    }
+    
+    .radio-option span {
+        white-space: nowrap; 
     }
 </style>
+
+<div class="question-container">
+    <h2>Add Questions to <span style="color: #007bff;">{{ quiz.title }}</span></h2>
+
+    <form method="post" class="question-form">
+        {% csrf_token %}
+        
+        <!-- Render the form fields manually -->
+        <div>
+            <label for="{{ question_form.text.id_for_label }}">Question:</label>
+            {{ question_form.text }}
+        </div>
+
+        <div>
+            <label for="{{ question_form.option1.id_for_label }}">Option 1:</label>
+            {{ question_form.option1 }}
+        </div>
+
+        <div>
+            <label for="{{ question_form.option2.id_for_label }}">Option 2:</label>
+            {{ question_form.option2 }}
+        </div>
+
+        <div>
+            <label for="{{ question_form.option3.id_for_label }}">Option 3:</label>
+            {{ question_form.option3 }}
+        </div>
+
+        <div>
+            <label for="{{ question_form.option4.id_for_label }}">Option 4:</label>
+            {{ question_form.option4 }}
+        </div>
+
+        <div class="radio-options">
+            <label>Correct Option:</label>
+            {% for radio in question_form.correct_option %}
+                <div class="radio-option">
+                    <span>{{ radio.choice_label }}</span>
+                    {{ radio.tag }}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="button-group">
+            <button type="submit" name="add_question" class="add-button">➕ Add Question</button>
+            <button type="submit" name="complete_quiz" class="complete-button">✅ Submit & Complete</button>
+        </div>
+    </form>
+</div>
 {% endblock %}

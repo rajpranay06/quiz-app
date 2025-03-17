@@ -3,128 +3,214 @@
 {% block content %}
 <style>
     .quiz-update-container {
-        max-width: 700px;
-        margin: auto;
-        padding: 20px;
-        background-color: #f4f4f4;
-        border-radius: 10px;
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 30px;
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     }
 
-    .quiz-update-container h2 {
+    .quiz-title {
         text-align: center;
+        color: #333;
+        margin-bottom: 25px;
+        font-size: 28px;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 15px;
+    }
+
+    .form-section {
+        margin-bottom: 30px;
+    }
+
+    .section-header {
+        font-size: 20px;
+        color: #007bff;
+        margin-bottom: 15px;
+        padding-left: 5px;
+        border-left: 4px solid #007bff;
     }
 
     .question-section {
-        margin-bottom: 20px;
+        margin-bottom: 25px;
         background: white;
-        padding: 10px;
-        border-radius: 5px;
+        padding: 20px;
+        border-radius: 8px;
         position: relative;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    .question-section:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: 500;
+        color: #444;
+    }
+
+    .form-group input, .form-group select {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
     }
 
     .delete-question-btn {
         background-color: #ff6b6b;
         color: white;
-        padding: 5px 10px;
+        padding: 8px 12px;
         border: none;
         border-radius: 5px;
         cursor: pointer;
         position: absolute;
-        top: 10px;
-        right: 10px;
+        top: 15px;
+        right: 15px;
+        transition: background-color 0.3s, transform 0.2s;
+        text-decoration: none;
     }
 
     .delete-question-btn:hover {
         background-color: #e84118;
+        transform: scale(1.05);
     }
 
-    .submit-btn, .delete-quiz-btn, .add-question-btn {
+    .btn {
         display: block;
         width: 100%;
-        padding: 10px;
+        padding: 12px;
         border: none;
-        border-radius: 5px;
+        border-radius: 6px;
         cursor: pointer;
-        margin-top: 10px;
+        margin-top: 15px;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background-color 0.3s, transform 0.2s;
+        text-align: center;
+        text-decoration: none;
     }
 
     .submit-btn {
-        background-color: #ff4757;
+        background-color: #4caf50;
         color: white;
     }
 
     .submit-btn:hover {
-        background-color: #e84118;
+        background-color: #45a049;
+        transform: translateY(-2px);
     }
 
     .add-question-btn {
-        background-color: #1e90ff;
+        background-color: #007bff;
         color: white;
     }
 
     .add-question-btn:hover {
-        background-color: #0073e6;
+        background-color: #0056b3;
+        transform: translateY(-2px);
     }
 
     .delete-quiz-btn {
-        background-color: #d63031;
+        background-color: #dc3545;
         color: white;
+        margin-top: 20px;
     }
 
     .delete-quiz-btn:hover {
-        background-color: #b71c1c;
+        background-color: #c82333;
+        transform: translateY(-2px);
+    }
+    
+    .buttons-container {
+        margin-top: 25px;
     }
 </style>
 
 <div class="quiz-update-container">
-    <h2>Update Quiz: {{ quiz.title }}</h2>
+    <h2 class="quiz-title">Update Quiz: {{ quiz.title }}</h2>
 
     <form method="post" id="quizForm">
         {% csrf_token %}
-        {{ quiz_form.as_p }}
+        <div class="form-section">
+            {% for field in quiz_form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                </div>
+            {% endfor %}
+        </div>
 
-        <h3>Existing Questions</h3>
+        <h3 class="section-header">Existing Questions</h3>
         {% for question in quiz.questions.all %}
             <div class="question-section">
-                <label>Question:</label>
-                <input type="text" name="question_{{ question.id }}" value="{{ question.text }}" required>
+                <div class="form-group">
+                    <label>Question:</label>
+                    <input type="text" name="question_{{ question.id }}" value="{{ question.text }}" required>
+                </div>
 
-                <label>Option 1:</label>
-                <input type="text" name="question_{{ question.id }}_option1" value="{{ question.option1 }}" required>
+                <div class="form-group">
+                    <label>Option 1:</label>
+                    <input type="text" name="question_{{ question.id }}_option1" value="{{ question.option1 }}" required>
+                </div>
 
-                <label>Option 2:</label>
-                <input type="text" name="question_{{ question.id }}_option2" value="{{ question.option2 }}" required>
+                <div class="form-group">
+                    <label>Option 2:</label>
+                    <input type="text" name="question_{{ question.id }}_option2" value="{{ question.option2 }}" required>
+                </div>
 
-                <label>Option 3:</label>
-                <input type="text" name="question_{{ question.id }}_option3" value="{{ question.option3 }}" required>
+                <div class="form-group">
+                    <label>Option 3:</label>
+                    <input type="text" name="question_{{ question.id }}_option3" value="{{ question.option3 }}" required>
+                </div>
 
-                <label>Option 4:</label>
-                <input type="text" name="question_{{ question.id }}_option4" value="{{ question.option4 }}" required>
+                <div class="form-group">
+                    <label>Option 4:</label>
+                    <input type="text" name="question_{{ question.id }}_option4" value="{{ question.option4 }}" required>
+                </div>
 
-                <label>Correct Option:</label>
-                <select name="question_{{ question.id }}_correct_option">
-                    <option value="1" {% if question.correct_option == 1 %}selected{% endif %}>Option 1</option>
-                    <option value="2" {% if question.correct_option == 2 %}selected{% endif %}>Option 2</option>
-                    <option value="3" {% if question.correct_option == 3 %}selected{% endif %}>Option 3</option>
-                    <option value="4" {% if question.correct_option == 4 %}selected{% endif %}>Option 4</option>
-                </select>
+                <div class="form-group">
+                    <label>Correct Option:</label>
+                    <select name="question_{{ question.id }}_correct_option">
+                        <option value="1" {% if question.correct_option == 1 %}selected{% endif %}>Option 1</option>
+                        <option value="2" {% if question.correct_option == 2 %}selected{% endif %}>Option 2</option>
+                        <option value="3" {% if question.correct_option == 3 %}selected{% endif %}>Option 3</option>
+                        <option value="4" {% if question.correct_option == 4 %}selected{% endif %}>Option 4</option>
+                    </select>
+                </div>
 
-                <!-- 🗑️ Delete Question Button -->
                 <a href="{% url 'delete_question' question.id %}" class="delete-question-btn">🗑️</a>
             </div>
         {% endfor %}
 
-        <h3>Add New Questions</h3>
+        <h3 class="section-header">Add New Questions</h3>
         <div id="new-questions-container"></div>
 
         <input type="hidden" name="new_questions_count" id="newQuestionsCount" value="0">
 
-        <button type="button" class="add-question-btn" onclick="addNewQuestion()">➕ Add New Question</button>
-        <button type="submit" class="submit-btn">💾 Save Changes</button>
+        <div class="buttons-container">
+            <button type="button" class="btn add-question-btn" onclick="addNewQuestion()">➕ Add New Question</button>
+            <button type="submit" class="btn submit-btn">💾 Save Changes</button>
+        </div>
     </form>
 
-    <!-- ❌ Delete Entire Quiz Button -->
-    <a href="{% url 'delete_quiz' quiz.id %}" class="delete-quiz-btn">❌ Delete Entire Quiz</a>
+    <a href="{% url 'delete_quiz' quiz.id %}" class="btn delete-quiz-btn">❌ Delete Entire Quiz</a>
 </div>
 
 <script>
@@ -137,28 +223,40 @@
         const container = document.getElementById('new-questions-container');
         const questionHTML = `
             <div class="question-section">
-                <label>Question:</label>
-                <input type="text" name="new_question_${newQuestionCount}_text" required>
+                <div class="form-group">
+                    <label>Question:</label>
+                    <input type="text" name="new_question_${newQuestionCount}_text" required>
+                </div>
 
-                <label>Option 1:</label>
-                <input type="text" name="new_question_${newQuestionCount}_option1" required>
+                <div class="form-group">
+                    <label>Option 1:</label>
+                    <input type="text" name="new_question_${newQuestionCount}_option1" required>
+                </div>
 
-                <label>Option 2:</label>
-                <input type="text" name="new_question_${newQuestionCount}_option2" required>
+                <div class="form-group">
+                    <label>Option 2:</label>
+                    <input type="text" name="new_question_${newQuestionCount}_option2" required>
+                </div>
 
-                <label>Option 3:</label>
-                <input type="text" name="new_question_${newQuestionCount}_option3" required>
+                <div class="form-group">
+                    <label>Option 3:</label>
+                    <input type="text" name="new_question_${newQuestionCount}_option3" required>
+                </div>
 
-                <label>Option 4:</label>
-                <input type="text" name="new_question_${newQuestionCount}_option4" required>
+                <div class="form-group">
+                    <label>Option 4:</label>
+                    <input type="text" name="new_question_${newQuestionCount}_option4" required>
+                </div>
 
-                <label>Correct Option:</label>
-                <select name="new_question_${newQuestionCount}_correct_option">
-                    <option value="1">Option 1</option>
-                    <option value="2">Option 2</option>
-                    <option value="3">Option 3</option>
-                    <option value="4">Option 4</option>
-                </select>
+                <div class="form-group">
+                    <label>Correct Option:</label>
+                    <select name="new_question_${newQuestionCount}_correct_option">
+                        <option value="1">Option 1</option>
+                        <option value="2">Option 2</option>
+                        <option value="3">Option 3</option>
+                        <option value="4">Option 4</option>
+                    </select>
+                </div>
             </div>
         `;
         container.insertAdjacentHTML('beforeend', questionHTML);

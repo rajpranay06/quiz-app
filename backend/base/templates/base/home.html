@@ -8,37 +8,67 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 80vh;
+        height: 90vh;
         text-align: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 12px;
+        margin: 20px;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-    .home-container p {
-        font-size: 1.5rem;
-        color: #333;
+    .tagline {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        max-width: 600px;
+        line-height: 1.4;
+    }
+
+    .emoji {
+        font-size: 2.5rem;
         margin-bottom: 20px;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
     }
 
     .home-button {
-        background-color: #ff4757;
+        background: linear-gradient(to right, #ff4757, #ff6b81);
         color: white;
-        padding: 15px 30px;
+        padding: 16px 32px;
         font-size: 1.2rem;
+        font-weight: bold;
         border: none;
         cursor: pointer;
-        border-radius: 5px;
-        text-decoration: none; /* Remove underline */
+        border-radius: 50px;
+        text-decoration: none;
         display: inline-block;
-        transition: 0.3s;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
     .home-button:hover {
-        background-color: #e84118;
+        background: linear-gradient(to right, #e84118, #ff4757);
+        transform: translateY(-3px);
+        box-shadow: 0 7px 20px rgba(255, 71, 87, 0.5);
+    }
+    
+    .home-button:active {
+        transform: translateY(1px);
     }
 </style>
 
 <div class="home-container">
-
-    <p>Think you're smart? Even your WiFi has better connections than your neurons. 🤯</p>
+    <div class="emoji">🧠</div>
+    <p class="tagline">Think you're smart? Even your WiFi has better connections than your neurons. 🤯</p>
     
     <a href="{% url 'login' %}" class="home-button">Let's Get Going! 🚀</a>
 </div>
