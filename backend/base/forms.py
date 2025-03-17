@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Quiz, Question
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -10,12 +12,46 @@ class CustomUserCreationForm(UserCreationForm):
         model = User
         fields = ['username', 'email', 'password1', 'password2']
 
+    def clean_username(self):
+        username = self.cleaned_data.get("username")
+        if len(username) < 3:
+            raise forms.ValidationError("Username must be at least 3 characters long.")
+        return username
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        # Validate email format
+        try:
+            validate_email(email)
+        except ValidationError:
+            raise forms.ValidationError("Enter a valid email address.")
+        
+        # Ensure email is unique
+        if User.objects.filter(email=email).exists():
+            raise forms.ValidationError("Email is already in use. Please use a different email.")
+        
+        # Extract domain from email
+        domain = email.split('@')[-1].lower()
+        
+        # Only allow specific approved domains
+        allowed_domains = [
+            'gmail.com',
+            'yahoo.com',
+            'sjsu.edu'
+        ]
+        
+        if domain not in allowed_domains:
+            raise ValidationError(f"Only email addresses from the following domains are accepted: {', '.join(allowed_domains)}")
+        
+        return email
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
         if commit:
             user.save()
         return user
+
 
 class QuizForm(forms.ModelForm):
     class Meta:

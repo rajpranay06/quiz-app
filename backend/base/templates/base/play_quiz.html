@@ -3,66 +3,179 @@
 {% block content %}
 <style>
     .quiz-container {
-        max-width: 600px;
-        margin: auto;
-        padding: 20px;
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
         text-align: center;
-        background: #f4f4f4;
-        border-radius: 10px;
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+    
+    .quiz-header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
     h2 {
-        color: #333;
+        color: #2c3e50;
+        font-size: 28px;
+        margin-bottom: 10px;
     }
+    
+    .quiz-description {
+        color: #7f8c8d;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+    
     .question {
-        margin-bottom: 20px;
+        margin-bottom: 30px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: left;
     }
+    
+    .question h3 {
+        color: #34495e;
+        margin-bottom: 15px;
+        font-size: 18px;
+        font-weight: 600;
+    }
+    
+    .options {
+        display: grid;
+        gap: 10px;
+    }
+    
     .options label {
-        display: block;
+        display: flex;
+        align-items: center;
         background: white;
-        padding: 10px;
-        margin: 5px 0;
-        border-radius: 5px;
+        padding: 15px;
+        border-radius: 8px;
         cursor: pointer;
-        border: 1px solid #ddd;
-        transition: background 0.3s, color 0.3s;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+        font-size: 16px;
+        position: relative;
+        padding-left: 50px;
     }
+    
     .options input {
-        display: none; /* Hide the default radio button */
+        display: none;
     }
-    /* Hover effect */
+    
+    .options label:before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #ddd;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+    
     .options label:hover {
-        background: #e84118; /* Red color on hover */
-        color: white;
+        background: #f0f8ff;
+        border-color: #3498db;
     }
-    /* Selected option style */
+    
+    .options label:hover:before {
+        border-color: #3498db;
+    }
+    
     .options input:checked + label {
-        background: #4caf50; /* Green color for selected option */
-        color: white;
+        background: #e8f4fd;
+        border-color: #3498db;
+        color: #2980b9;
     }
+    
+    .options input:checked + label:before {
+        border-color: #3498db;
+        background: #3498db;
+        box-shadow: inset 0 0 0 4px #fff;
+    }
+    
+    .submit-container {
+        margin-top: 30px;
+    }
+    
     .submit-btn {
-        background-color: #ff4757;
+        background-color: #3498db;
         color: white;
-        padding: 10px 20px;
-        font-size: 1rem;
+        padding: 14px 28px;
+        font-size: 16px;
         border: none;
         cursor: pointer;
-        border-radius: 5px;
+        border-radius: 30px;
         transition: 0.3s;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
     }
+    
     .submit-btn:hover {
-        background-color: #e84118;
+        background-color: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(52, 152, 219, 0.3);
+    }
+    
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+    
+    @media (max-width: 768px) {
+        .quiz-container {
+            padding: 20px;
+            margin: 20px auto;
+        }
+        
+        .question {
+            padding: 15px;
+        }
+        
+        .options label {
+            padding: 12px 12px 12px 45px;
+            font-size: 15px;
+        }
+    }
+    
+    .progress-bar {
+        height: 6px;
+        background: #f0f0f0;
+        border-radius: 3px;
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+    
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(to right, #3498db, #2ecc71);
+        width: 0%;
+        transition: width 0.5s ease;
     }
 </style>
 
 <div class="quiz-container">
-    <h2>{{ quiz.title }}</h2>
-    <p>{{ quiz.description }}</p>
+    <div class="quiz-header">
+        <h2>{{ quiz.title }}</h2>
+        <p class="quiz-description">{{ quiz.description }}</p>
+    </div>
+    
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
 
-    <form method="post" action="{% url 'submit_quiz' quiz.id %}">
+    <form method="post" action="{% url 'submit_quiz' quiz.id %}" id="quiz-form">
         {% csrf_token %}
         {% for question in questions %}
-            <div class="question">
-                <h3>{{ question.text }}</h3>
+            <div class="question" data-question="{{ forloop.counter }}">
+                <h3>Question {{ forloop.counter }}: {{ question.text }}</h3>
                 <div class="options">
                     <input type="radio" name="question_{{ question.id }}" value="1" id="option1_{{ question.id }}">
                     <label for="option1_{{ question.id }}">{{ question.option1 }}</label>
@@ -79,7 +192,29 @@
             </div>
         {% endfor %}
         
-        <button type="submit" class="submit-btn">Submit Answers</button>
+        <div class="submit-container">
+            <button type="submit" class="submit-btn">Submit Answers</button>
+        </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('quiz-form');
+        const inputs = form.querySelectorAll('input[type="radio"]');
+        const progressFill = document.getElementById('progress-fill');
+        const totalQuestions = {{ questions|length }};
+        let answeredQuestions = new Set();
+        
+        inputs.forEach(input => {
+            input.addEventListener('change', function() {
+                const questionId = this.name;
+                answeredQuestions.add(questionId);
+                
+                const progress = (answeredQuestions.size / totalQuestions) * 100;
+                progressFill.style.width = progress + '%';
+            });
+        });
+    });
+</script>
 {% endblock %}

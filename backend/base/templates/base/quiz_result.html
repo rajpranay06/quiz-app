@@ -1,18 +1,213 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<style>
+    .quiz-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        text-align: center;
+        background: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .quiz-header {
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+    
+    h2 {
+        color: #2c3e50;
+        font-size: 28px;
+        margin-bottom: 10px;
+    }
+    
+    .score-container {
+        margin: 30px 0;
+        font-size: 18px;
+        color: #34495e;
+        line-height: 1.6;
+    }
+    
+    .score-display {
+        font-size: 42px;
+        font-weight: bold;
+        margin: 20px 0;
+        color: #3498db;
+    }
+    
+    .score-display .score {
+        color: #3498db;
+    }
+    
+    .score-display .total {
+        color: #7f8c8d;
+    }
+    
+    .feedback-message {
+        font-size: 22px;
+        margin: 30px 0;
+        padding: 20px;
+        border-radius: 10px;
+        background: #f8f9fa;
+    }
+    
+    .perfect-score {
+        background: #e8f8f5;
+        color: #27ae60;
+        border-left: 5px solid #2ecc71;
+    }
+    
+    .good-score {
+        background: #eaf2fd;
+        color: #2980b9;
+        border-left: 5px solid #3498db;
+    }
+    
+    .keep-practicing {
+        background: #fef9e7;
+        color: #f39c12;
+        border-left: 5px solid #f1c40f;
+    }
+    
+    .emoji {
+        font-size: 32px;
+        margin: 0 5px;
+        display: inline-block;
+    }
+    
+    .action-container {
+        margin-top: 40px;
+    }
+    
+    .action-btn {
+        display: inline-block;
+        background-color: #3498db;
+        color: white;
+        padding: 14px 28px;
+        font-size: 16px;
+        text-decoration: none;
+        border-radius: 30px;
+        transition: 0.3s;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+    }
+    
+    .action-btn:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(52, 152, 219, 0.3);
+    }
+    
+    .action-btn:active {
+        transform: translateY(0);
+    }
+    
+    .secondary-btn {
+        background-color: #ecf0f1;
+        color: #34495e;
+        margin-left: 15px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .secondary-btn:hover {
+        background-color: #e0e6e8;
+    }
+    
+    .progress-circle {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 20px auto;
+        border-radius: 50%;
+        background: #ecf0f1;
+    }
+    
+    .progress-circle-fill {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        width: 130px;
+        height: 130px;
+        top: 10px;
+        left: 10px;
+        border-radius: 50%;
+        background: white;
+        z-index: 1;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    
+    .progress-circle:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: conic-gradient(
+            #3498db calc(var(--percentage) * 1%),
+            #ecf0f1 0
+        );
+    }
+</style>
+
 <div class="quiz-container">
-    <h2>Quiz Completed!</h2>
-    <p>You scored <strong>{{ score }}</strong> out of <strong>{{ total }}</strong>!</p>
+    <div class="quiz-header">
+        <h2>Quiz Completed!</h2>
+    </div>
+    
+    <div class="score-container">
+        <div class="progress-circle" style="--percentage: {{ score|default:0 }}/{{ total|default:1 }}*100">
+            <div class="progress-circle-fill">
+                <span>{{ score }}/{{ total }}</span>
+            </div>
+        </div>
+        
+        <div class="score-display">
+            <span class="score">{{ score }}</span>
+            <span> / </span>
+            <span class="total">{{ total }}</span>
+        </div>
+    </div>
     
     {% if score == total %}
-        <p>🎉 Perfect score! You're a genius! 🏆</p>
+        <div class="feedback-message perfect-score">
+            <span class="emoji">🎉</span> Perfect score! You're a genius! <span class="emoji">🏆</span>
+        </div>
     {% elif score > total|divisibleby:2 %}
-        <p>🔥 Great job! Keep improving! 🚀</p>
+        <div class="feedback-message good-score">
+            <span class="emoji">🔥</span> Great job! Keep improving! <span class="emoji">🚀</span>
+        </div>
     {% else %}
-        <p>🤔 Keep practicing, you'll get there! 💪</p>
+        <div class="feedback-message keep-practicing">
+            <span class="emoji">🤔</span> Keep practicing, you'll get there! <span class="emoji">💪</span>
+        </div>
     {% endif %}
-
-    <a href="{% url 'home' %}" class="submit-btn">Back to Home</a>
+    
+    <div class="action-container">
+        <a href="{% url 'home' %}" class="action-btn">Back to Home</a>
+        {% if quiz %}
+            <a href="{% url 'play_quiz' quiz.id %}" class="action-btn secondary-btn">Try Again</a>
+        {% endif %}
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const progressCircle = document.querySelector('.progress-circle');
+        if (progressCircle) {
+            const score = {{ score|default:0 }};
+            const total = {{ total|default:1 }};
+            const percentage = (score / total) * 100;
+            progressCircle.style.setProperty('--percentage', percentage);
+        }
+    });
+</script>
 {% endblock %}

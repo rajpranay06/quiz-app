@@ -1,19 +1,112 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<style>
+    .quiz-list-container {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 25px;
+        background-color: #f8f9fa;
+        border-radius: 12px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .quiz-list-header {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+        font-size: 28px;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 15px;
+    }
+
+    .quiz-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .quiz-item {
+        background-color: white;
+        margin-bottom: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .quiz-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .quiz-item-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+    }
+
+    .quiz-title {
+        font-size: 18px;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .quiz-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .edit-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .edit-button:hover {
+        background-color: #0056b3;
+        text-decoration: none;
+        color: white;
+    }
+
+    .no-quizzes {
+        text-align: center;
+        padding: 30px;
+        color: #6c757d;
+        font-size: 18px;
+    }
+</style>
+
 <div class="quiz-list-container">
-    <h2>Your Quizzes</h2>
+    <h2 class="quiz-list-header">Your Quizzes</h2>
+    
     {% if quizzes %}
-        <ul>
+        <ul class="quiz-list">
             {% for quiz in quizzes %}
-                <li>
-                    {{ quiz.title }} - 
-                    <a href="{% url 'update_quiz' quiz_id=quiz.id %}">✏️ Edit</a>
+                <li class="quiz-item">
+                    <div class="quiz-item-content">
+                        <span class="quiz-title">{{ quiz.title }}</span>
+                        <div class="quiz-actions">
+                            <a href="{% url 'update_quiz' quiz_id=quiz.id %}" class="edit-button">
+                                <span>✏️</span> Edit
+                            </a>
+                        </div>
+                    </div>
                 </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p>You haven't created any quizzes yet.</p>
+        <div class="no-quizzes">
+            <p>You haven't created any quizzes yet.</p>
+        </div>
     {% endif %}
 </div>
 {% endblock %}
