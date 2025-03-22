@@ -47,6 +47,24 @@ jobs:
           command: |
             docker push $DOCKERHUB_USERNAME/quiz-app:latest
 
+  deploy-to-ec2:
+    docker:
+      - image: circleci/python:3.9
+    steps:
+      - checkout
+      - run:
+          name: SSH into EC2 and deploy Docker container
+          command: |
+            mkdir -p ~/.ssh
+            echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh -o StrictHostKeyChecking=no ec2-user@$EC2_PUBLIC_IP << EOF
+              docker pull $DOCKERHUB_USERNAME/quiz-app:latest
+              docker stop quiz-app || true
+              docker rm quiz-app || true
+              docker run -d -p 8000:8000 --name quiz-app $DOCKERHUB_USERNAME/quiz-app:latest
+            EOF
+
 
 workflows:
   version: 2
@@ -56,3 +74,6 @@ workflows:
       - build-and-push:
           requires:
             - test
+      - deploy-to-ec2:
+          requires:
+            - build-and-push
