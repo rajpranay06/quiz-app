@@ -33,6 +33,9 @@ jobs:
       - checkout
       - setup_remote_docker
       - run:
+          name: Print Docker Tag
+          command: echo "Building Docker image: $DOCKERHUB_USERNAME/quiz-app:latest"
+      - run:
           name: Build Docker Image
           command: |
             docker build -t $DOCKERHUB_USERNAME/quiz-app:latest .
@@ -43,6 +46,7 @@ jobs:
           name: Push Image to DockerHub
           command: |
             docker push $DOCKERHUB_USERNAME/quiz-app:latest
+
 
 workflows:
   version: 2
