@@ -52,6 +52,9 @@ jobs:
       - image: circleci/python:3.9
     steps:
       - run:
+          name: Print Private Key
+          command: echo "Private Key $EC2_PRIVATE_KEY"
+      - run:
           name: Deploy to EC2
           command: |
             echo "$EC2_PRIVATE_KEY" > private_key.pem
