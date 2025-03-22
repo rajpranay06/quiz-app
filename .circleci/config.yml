@@ -34,7 +34,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Print Docker Tag
-          command: echo "Building Docker image: $DOCKERHUB_USERNAME/quiz-app:latest"
+          command: echo "Building Docker image $DOCKERHUB_USERNAME/quiz-app:latest"
       - run:
           name: Build Docker Image
           command: |
