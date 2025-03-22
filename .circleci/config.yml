@@ -24,7 +24,7 @@ jobs:
           name: Run Tests
           command: |
             source venv/bin/activate
-            python manage.py test
+            python .backend/manage.py test
 
   build-and-push:
     docker:
