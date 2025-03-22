@@ -51,18 +51,14 @@ jobs:
     docker:
       - image: circleci/python:3.9
     steps:
-      - checkout
       - run:
-          name: SSH into EC2 and deploy Docker container
+          name: Deploy to EC2
           command: |
-            mkdir -p ~/.ssh
-            echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
-            chmod 600 ~/.ssh/id_rsa
-            ssh -o StrictHostKeyChecking=no ec2-user@$EC2_PUBLIC_IP << EOF
-              docker pull $DOCKERHUB_USERNAME/quiz-app:latest
-              docker stop quiz-app || true
-              docker rm quiz-app || true
-              docker run -d -p 8000:8000 --name quiz-app $DOCKERHUB_USERNAME/quiz-app:latest
+            ssh -o StrictHostKeyChecking=no ec2-user@$EC2_PUBLIC_IP \<< EOF
+            # Commands to execute on EC2
+            cd /path/to/your/app
+            docker pull pranay2406/quiz-app:latest
+            docker run -d -p 8000:8000 pranay2406/quiz-app:latest
             EOF
 
 
