@@ -51,3 +51,5 @@ class QuizAttemptModelTest(TestCase):
     def test_unique_quiz_attempt(self):
         with self.assertRaises(Exception):
             QuizAttempt.objects.create(user=self.user, quiz=self.quiz, score=90, attempts=2)
+
+
