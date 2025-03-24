@@ -24,7 +24,7 @@ jobs:
           name: Run Tests
           command: |
             source venv/bin/activate
-            python manage.py test
+            python backend/manage.py test
 
   build-and-push:
     docker:
@@ -32,6 +32,9 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - run:
+          name: Print Docker Tag
+          command: echo "Building Docker image $DOCKERHUB_USERNAME/quiz-app:latest"
       - run:
           name: Build Docker Image
           command: |
@@ -44,6 +47,25 @@ jobs:
           command: |
             docker push $DOCKERHUB_USERNAME/quiz-app:latest
 
+  deploy-to-ec2:
+    docker:
+      - image: circleci/python:3.9
+    steps:
+      - run:
+          name: Print Private Key
+          command: echo "Private Key $EC2_PRIVATE_KEY"
+      - run:
+          name: Deploy to EC2
+          command: |
+            echo "$EC2_PRIVATE_KEY" > private_key.pem
+            chmod 600 private_key.pem
+            ssh -i private_key.pem ec2-user@$EC2_PUBLIC_IP \<< EOF
+            # Commands to execute on EC2
+            docker pull pranay2406/quiz-app:latest
+            docker run -d -p 8000:8000 pranay2406/quiz-app:latest
+            EOF
+
+
 workflows:
   version: 2
   test-and-deploy:
@@ -52,3 +74,6 @@ workflows:
       - build-and-push:
           requires:
             - test
+      - deploy-to-ec2:
+          requires:
+            - build-and-push
