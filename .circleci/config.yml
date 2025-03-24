@@ -61,7 +61,6 @@ jobs:
             chmod 600 private_key.pem
             ssh -o StrictHostKeyChecking=no -i private_key.pem -t ec2-user@$EC2_PUBLIC_IP \<< EOF
             # Commands to execute on EC2
-            cd /path/to/your/app
             docker pull pranay2406/quiz-app:latest
             docker run -d -p 8000:8000 pranay2406/quiz-app:latest
             EOF
