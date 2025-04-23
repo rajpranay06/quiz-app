@@ -1,12 +1,12 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import render, redirect, get_object_or_404
-from ..models import Quiz, QuizAttempt, Question
-from ..forms import JoinQuizForm, QuizForm
+from ..models import Quiz, QuizAttempt, Question, Option, UserAnswer
+from ..forms import JoinQuizForm, QuizForm, QuestionForm, OptionForm
 from django.contrib import messages
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 
 
  
@@ -37,7 +37,7 @@ def join_quiz(request):
 @login_required
 def play_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
-    questions = quiz.questions.all()
+    questions = quiz.questions.all().prefetch_related('options')
 
     # Check if the user has already attempted the quiz
     attempt, created = QuizAttempt.objects.get_or_create(
@@ -56,16 +56,36 @@ def play_quiz(request, quiz_id):
         score = 0
         total_questions = questions.count()
 
-        # Calculate the score
-        for question in questions:
-            selected_option = request.POST.get(f'question_{question.id}')
-            if selected_option and int(selected_option) == question.correct_option:
-                score += 1
+        with transaction.atomic():
+            # Calculate the score
+            for question in questions:
+                # Get all submitted answers for this question (handles multiple choice)
+                selected_options = request.POST.getlist(f'question_{question.id}')
+                correct_options = question.options.filter(is_correct=True).count()
+                selected_correct = question.options.filter(id__in=selected_options, is_correct=True).count()
+                
+                # Create user answer record
+                user_answer = UserAnswer.objects.create(
+                    quiz_attempt=attempt,
+                    question=question
+                )
+                
+                # Add selected options to the user answer
+                for option_id in selected_options:
+                    option = Option.objects.get(id=option_id)
+                    user_answer.selected_options.add(option)
+                
+                # Full point if all correct options are selected and no incorrect ones
+                if selected_correct == correct_options and len(selected_options) == correct_options:
+                    score += 1
+                # Partial credit for partially correct answers
+                elif selected_correct > 0:
+                    score += selected_correct / correct_options * 0.5
 
-        # Update the attempt record properly
-        attempt.attempts = 1  # Update the number of attempts
-        attempt.score = score  # Update the score
-        attempt.save()  # Save the updated attempt object
+            # Update the attempt record
+            attempt.attempts = 1  # Update the number of attempts
+            attempt.score = score  # Update the score
+            attempt.save()  # Save the updated attempt object
 
         # Render result page
         return render(request, 'base/quiz_result.html', {
@@ -83,15 +103,48 @@ def play_quiz(request, quiz_id):
 @login_required
 def submit_quiz(request, quiz_id):
     quiz = get_object_or_404(Quiz, id=quiz_id)
-    questions = quiz.questions.all()
+    questions = quiz.questions.all().prefetch_related('options')
     score = 0
     total_questions = questions.count()
 
     if request.method == "POST":
-        for question in questions:
-            selected_option = request.POST.get(f'question_{question.id}')
-            if selected_option and int(selected_option) == question.correct_option:
-                score += 1
+        # Create or get quiz attempt
+        attempt, created = QuizAttempt.objects.get_or_create(
+            user=request.user,
+            quiz=quiz,
+            defaults={'attempts': 1, 'score': 0}
+        )
+        
+        if not created:
+            attempt.attempts += 1
+            
+        with transaction.atomic():
+            for question in questions:
+                # Get all submitted answers for this question (handles multiple choice)
+                selected_options = request.POST.getlist(f'question_{question.id}')
+                correct_options = question.options.filter(is_correct=True).count()
+                selected_correct = question.options.filter(id__in=selected_options, is_correct=True).count()
+                
+                # Create user answer record
+                user_answer = UserAnswer.objects.create(
+                    quiz_attempt=attempt,
+                    question=question
+                )
+                
+                # Add selected options to the user answer
+                for option_id in selected_options:
+                    option = Option.objects.get(id=option_id)
+                    user_answer.selected_options.add(option)
+                
+                # Full point if all correct options are selected and no incorrect ones
+                if selected_correct == correct_options and len(selected_options) == correct_options:
+                    score += 1
+                # Partial credit for partially correct answers
+                elif selected_correct > 0:
+                    score += selected_correct / correct_options * 0.5
+            
+            attempt.score = score
+            attempt.save()
 
         return render(request, 'base/quiz_result.html', {'quiz': quiz, 'score': score, 'total': total_questions})
 
@@ -122,40 +175,61 @@ def update_quiz(request, quiz_id):
             # Update existing questions
             for question in quiz.questions.all():
                 question_id = f'question_{question.id}'
-                option1 = request.POST.get(f'{question_id}_option1')
-                option2 = request.POST.get(f'{question_id}_option2')
-                option3 = request.POST.get(f'{question_id}_option3')
-                option4 = request.POST.get(f'{question_id}_option4')
-                correct_option = request.POST.get(f'{question_id}_correct_option')
-
-                if option1 and option2 and option3 and option4 and correct_option:
-                    question.option1 = option1
-                    question.option2 = option2
-                    question.option3 = option3
-                    question.option4 = option4
-                    question.correct_option = int(correct_option)
+                question_text = request.POST.get(f'{question_id}_text')
+                
+                if question_text:
+                    question.text = question_text
                     question.save()
+                    
+                    # Handle existing options
+                    existing_options = list(question.options.all())
+                    option_ids = request.POST.getlist(f'{question_id}_option_ids')
+                    
+                    # First, delete options that are not in the submitted form
+                    for option in existing_options:
+                        if str(option.id) not in option_ids:
+                            option.delete()
+                    
+                    # Then update or create options
+                    for i, option_id in enumerate(option_ids):
+                        option_text = request.POST.get(f'{question_id}_option_text_{i}')
+                        is_correct = request.POST.get(f'{question_id}_is_correct_{i}') == 'on'
+                        
+                        if option_id and option_text:  # Update existing option
+                            option = Option.objects.get(id=option_id)
+                            option.text = option_text
+                            option.is_correct = is_correct
+                            option.save()
+                        elif option_text:  # Create new option
+                            Option.objects.create(
+                                question=question,
+                                text=option_text,
+                                is_correct=is_correct
+                            )
 
             # Add new questions
             new_questions_count = int(request.POST.get('new_questions_count', 0))
             for i in range(1, new_questions_count + 1):
                 text = request.POST.get(f'new_question_{i}_text')
-                option1 = request.POST.get(f'new_question_{i}_option1')
-                option2 = request.POST.get(f'new_question_{i}_option2')
-                option3 = request.POST.get(f'new_question_{i}_option3')
-                option4 = request.POST.get(f'new_question_{i}_option4')
-                correct_option = request.POST.get(f'new_question_{i}_correct_option')
-
-                if text and option1 and option2 and option3 and option4 and correct_option:
-                    Question.objects.create(
+                
+                if text:
+                    new_question = Question.objects.create(
                         quiz=quiz,
-                        text=text,
-                        option1=option1,
-                        option2=option2,
-                        option3=option3,
-                        option4=option4,
-                        correct_option=int(correct_option)
+                        text=text
                     )
+                    
+                    # Add options for this new question
+                    option_count = int(request.POST.get(f'new_question_{i}_option_count', 0))
+                    for j in range(option_count):
+                        option_text = request.POST.get(f'new_question_{i}_option_text_{j}')
+                        is_correct = request.POST.get(f'new_question_{i}_is_correct_{j}') == 'on'
+                        
+                        if option_text:
+                            Option.objects.create(
+                                question=new_question,
+                                text=option_text,
+                                is_correct=is_correct
+                            )
 
             return redirect('lobby')
 

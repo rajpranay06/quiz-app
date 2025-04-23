@@ -4,157 +4,258 @@
 <style>
     .question-container {
         max-width: 700px;
-        margin: auto;
-        padding: 20px;
-        background-color: #f8f9fa;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: #ffffff;
         border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         text-align: left; 
+        font-family: 'Segoe UI', Arial, sans-serif;
     }
 
     h2 {
         color: #333;
-        margin-bottom: 15px;
+        margin-bottom: 25px;
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    h2 span {
+        color: #007bff;
     }
 
     .question-form {
         display: flex;
         flex-direction: column;
-        gap: 15px;
+        gap: 20px;
     }
 
-    .question-form input, 
+    .form-section {
+        margin-bottom: 20px;
+    }
+
+    .form-section label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: #333;
+        font-size: 16px;
+    }
+
+    .question-form input[type="text"], 
     .question-form select, 
     .question-form textarea {
         width: 100%;
-        padding: 10px;
-        border: 2px solid #007bff;
-        border-radius: 5px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
         font-size: 16px;
         background-color: white;
-        transition: border 0.3s ease-in-out;
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    .question-form input:focus, 
+    .question-form input[type="text"]:focus, 
     .question-form select:focus, 
     .question-form textarea:focus {
         outline: none;
-        border: 2px solid #0056b3;
-        box-shadow: 0 0 5px rgba(0, 91, 187, 0.5);
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
     }
 
     .button-group {
         display: flex;
         justify-content: space-between;
-        margin-top: 15px;
+        margin-top: 30px;
     }
 
     .add-button, .complete-button {
-        flex: 1;
-        padding: 12px;
-        font-size: 18px;
-        font-weight: bold;
+        padding: 12px 24px;
+        font-size: 16px;
+        font-weight: 600;
         border: none;
-        border-radius: 5px;
+        border-radius: 6px;
         cursor: pointer;
-        transition: background 0.3s ease-in-out;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .add-button {
+        flex: 1;
         background-color: #007bff;
         color: white;
-        margin-right: 10px;
+        margin-right: 15px;
     }
 
     .add-button:hover {
-        background-color: #0056b3;
+        background-color: #0069d9;
+        transform: translateY(-2px);
     }
 
     .complete-button {
+        flex: 1;
         background-color: #4caf50;
         color: white;
     }
 
     .complete-button:hover {
         background-color: #45a049;
+        transform: translateY(-2px);
+    }
+    
+    .add-option-button {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 16px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+        display: inline-block;
+    }
+    
+    .add-option-button:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
     }
 
-    .radio-options {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+    .options-container {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 20px;
         margin-top: 10px;
+        background-color: #f8f9ff;
     }
     
-    .radio-option {
+    .option-row {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        font-size: 16px;
+        margin-bottom: 15px;
+        padding: 0;
         background-color: white;
-        padding: 10px;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .option-row:hover {
+        box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+    }
+    
+    .option-text {
+        flex: 1;
         border: 1px solid #ddd;
-        border-radius: 5px;
+        border-radius: 6px;
+        padding: 12px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+    
+    .option-text:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    }
+    
+    .option-checkbox-container {
+        display: flex;
+        align-items: center;
+        margin: 0 15px;
+    }
+    
+    .option-correct {
+        width: 20px;
+        height: 20px;
         cursor: pointer;
-        transition: background-color 0.3s ease;
-        width: 100%;
+        margin-right: 8px;
+        accent-color: #28a745;
     }
     
-    .radio-option:hover {
-        background-color: #f1f1f1;
-    }
-    
-    .radio-option input[type="radio"] {
+    .option-correct-label {
+        cursor: pointer;
+        font-weight: 600;
+        color: #28a745;
         margin: 0;
-        cursor: pointer;
-        order: 2; 
+        white-space: nowrap;
     }
     
-    .radio-option span {
-        white-space: nowrap; 
+    .remove-option {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        margin: 0 10px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+    }
+    
+    .remove-option:hover {
+        background-color: #c82333;
+        transform: scale(1.1);
+    }
+    
+    .options-info {
+        font-size: 14px;
+        margin-top: 15px;
+        color: #6c757d;
+        font-style: italic;
+    }
+    
+    .options-info p {
+        margin: 5px 0;
     }
 </style>
 
 <div class="question-container">
-    <h2>Add Questions to <span style="color: #007bff;">{{ quiz.title }}</span></h2>
+    <h2>Add Questions to <span>{{ quiz.title }}</span></h2>
 
-    <form method="post" class="question-form">
+    <form method="post" class="question-form" id="question-form">
         {% csrf_token %}
         
-        <!-- Render the form fields manually -->
-        <div>
+        <!-- Question text field -->
+        <div class="form-section">
             <label for="{{ question_form.text.id_for_label }}">Question:</label>
             {{ question_form.text }}
         </div>
 
-        <div>
-            <label for="{{ question_form.option1.id_for_label }}">Option 1:</label>
-            {{ question_form.option1 }}
-        </div>
-
-        <div>
-            <label for="{{ question_form.option2.id_for_label }}">Option 2:</label>
-            {{ question_form.option2 }}
-        </div>
-
-        <div>
-            <label for="{{ question_form.option3.id_for_label }}">Option 3:</label>
-            {{ question_form.option3 }}
-        </div>
-
-        <div>
-            <label for="{{ question_form.option4.id_for_label }}">Option 4:</label>
-            {{ question_form.option4 }}
-        </div>
-
-        <div class="radio-options">
-            <label>Correct Option:</label>
-            {% for radio in question_form.correct_option %}
-                <div class="radio-option">
-                    <span>{{ radio.choice_label }}</span>
-                    {{ radio.tag }}
+        <!-- Options container -->
+        <div class="form-section">
+            <label>Options:</label>
+            <div class="options-container" id="options-container">
+                <div class="option-row">
+                    <input type="text" name="option_text_0" placeholder="Enter option 1" class="option-text" required>
+                    <div class="option-checkbox-container">
+                        <input type="checkbox" name="is_correct_0" id="is_correct_0" class="option-correct">
+                        <label for="is_correct_0" class="option-correct-label">Correct</label>
+                    </div>
                 </div>
-            {% endfor %}
+                <div class="option-row">
+                    <input type="text" name="option_text_1" placeholder="Enter option 2" class="option-text" required>
+                    <div class="option-checkbox-container">
+                        <input type="checkbox" name="is_correct_1" id="is_correct_1" class="option-correct">
+                        <label for="is_correct_1" class="option-correct-label">Correct</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="options-info">
+                <p>* You can select multiple correct answers</p>
+                <p>* At least one option must be marked as correct</p>
+            </div>
+            
+            <button type="button" id="add-option-btn" class="add-option-button">+ Add Another Option</button>
+            <input type="hidden" name="option_count" id="option-count" value="2">
         </div>
 
         <div class="button-group">
@@ -163,4 +264,114 @@
         </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addOptionBtn = document.getElementById('add-option-btn');
+        const optionsContainer = document.getElementById('options-container');
+        const optionCountInput = document.getElementById('option-count');
+        let optionCount = 2; // Start with 2 options
+        
+        // Function to add a new option
+        addOptionBtn.addEventListener('click', function() {
+            const newOption = document.createElement('div');
+            newOption.className = 'option-row';
+            
+            const optionNumber = optionCount;
+            newOption.innerHTML = `
+                <input type="text" name="option_text_${optionNumber}" placeholder="Enter option ${optionNumber + 1}" class="option-text" required>
+                <div class="option-checkbox-container">
+                    <input type="checkbox" name="is_correct_${optionNumber}" id="is_correct_${optionNumber}" class="option-correct">
+                    <label for="is_correct_${optionNumber}" class="option-correct-label">Correct</label>
+                </div>
+                <button type="button" class="remove-option">×</button>
+            `;
+            
+            optionsContainer.appendChild(newOption);
+            optionCount++;
+            optionCountInput.value = optionCount;
+            
+            // Add event listener to the remove button
+            const removeBtn = newOption.querySelector('.remove-option');
+            removeBtn.addEventListener('click', function() {
+                optionsContainer.removeChild(newOption);
+                // Recalculate option count and reindex
+                reindexOptions();
+            });
+        });
+        
+        // Function to reindex options after removal
+        function reindexOptions() {
+            const optionRows = optionsContainer.querySelectorAll('.option-row');
+            optionCount = optionRows.length;
+            optionCountInput.value = optionCount;
+            
+            optionRows.forEach((row, index) => {
+                const textInput = row.querySelector('input[type="text"]');
+                const checkbox = row.querySelector('input[type="checkbox"]');
+                const label = row.querySelector('label');
+                
+                textInput.name = `option_text_${index}`;
+                textInput.placeholder = `Enter option ${index + 1}`;
+                checkbox.name = `is_correct_${index}`;
+                checkbox.id = `is_correct_${index}`;
+                label.setAttribute('for', `is_correct_${index}`);
+            });
+        }
+        
+        // Add remove buttons to initial options
+        const initialOptions = optionsContainer.querySelectorAll('.option-row');
+        initialOptions.forEach((option, index) => {
+            if (index >= 2) { // Only add remove button if we have more than 2 options
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-option';
+                removeBtn.textContent = '×';
+                removeBtn.type = 'button';
+                
+                removeBtn.addEventListener('click', function() {
+                    optionsContainer.removeChild(option);
+                    reindexOptions();
+                });
+                
+                option.appendChild(removeBtn);
+            }
+        });
+        
+        // Validate form before submission
+        const questionForm = document.getElementById('question-form');
+        questionForm.addEventListener('submit', function(event) {
+            const options = optionsContainer.querySelectorAll('.option-row');
+            const questionText = document.querySelector('#id_text').value.trim();
+            
+            // Check if question text is provided
+            if (!questionText) {
+                alert('Please enter a question');
+                event.preventDefault();
+                return;
+            }
+            
+            // Check if we have at least 2 options
+            if (options.length < 2) {
+                alert('Please add at least 2 options');
+                event.preventDefault();
+                return;
+            }
+            
+            // Check if at least one option is marked as correct
+            let hasCorrectOption = false;
+            options.forEach(option => {
+                const checkbox = option.querySelector('input[type="checkbox"]');
+                if (checkbox.checked) {
+                    hasCorrectOption = true;
+                }
+            });
+            
+            if (!hasCorrectOption) {
+                alert('Please mark at least one option as correct');
+                event.preventDefault();
+                return;
+            }
+        });
+    });
+</script>
 {% endblock %}

@@ -6,9 +6,10 @@
         max-width: 800px;
         margin: 30px auto;
         padding: 30px;
-        background-color: #f8f9fa;
+        background-color: #ffffff;
         border-radius: 12px;
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        font-family: 'Segoe UI', Arial, sans-serif;
     }
 
     .quiz-title {
@@ -58,19 +59,21 @@
         color: #444;
     }
 
-    .form-group input, .form-group select {
+    .form-group input, .form-group select, .form-group textarea {
         width: 100%;
-        padding: 10px;
-        border: 2px solid #ddd;
-        border-radius: 5px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
         font-size: 16px;
-        transition: border-color 0.3s;
+        transition: all 0.3s ease;
+        background-color: white;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     }
 
-    .form-group input:focus, .form-group select:focus {
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
         outline: none;
         border-color: #007bff;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
     }
 
     .delete-question-btn {
@@ -102,7 +105,7 @@
         margin-top: 15px;
         font-size: 16px;
         font-weight: 600;
-        transition: background-color 0.3s, transform 0.2s;
+        transition: all 0.3s ease;
         text-align: center;
         text-decoration: none;
     }
@@ -117,12 +120,12 @@
         transform: translateY(-2px);
     }
 
-    .add-question-btn {
+    .add-question-btn, .add-option-btn {
         background-color: #007bff;
         color: white;
     }
 
-    .add-question-btn:hover {
+    .add-question-btn:hover, .add-option-btn:hover {
         background-color: #0056b3;
         transform: translateY(-2px);
     }
@@ -140,6 +143,95 @@
     
     .buttons-container {
         margin-top: 25px;
+    }
+    
+    .options-container {
+        border: 1px solid #e0e0e0;
+        padding: 20px;
+        border-radius: 8px;
+        background-color: #f8f9ff;
+        margin-bottom: 15px;
+    }
+    
+    .option-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        background-color: white;
+        border-radius: 6px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+    
+    .option-row:hover {
+        box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
+    }
+    
+    .option-text {
+        flex-grow: 1;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 12px;
+        font-size: 16px;
+        margin-right: 0;
+        transition: all 0.3s ease;
+    }
+
+    .option-text:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+    }
+    
+    .option-checkbox-container {
+        display: flex;
+        align-items: center;
+        margin: 0 15px;
+    }
+    
+    .option-correct {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        margin-right: 8px;
+        accent-color: #28a745;
+    }
+    
+    .option-correct-label {
+        cursor: pointer;
+        font-weight: 600;
+        color: #28a745;
+        margin: 0;
+        white-space: nowrap;
+    }
+    
+    .remove-option-btn {
+        background-color: #ff6b6b;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        margin: 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        transition: all 0.2s ease;
+    }
+    
+    .remove-option-btn:hover {
+        background-color: #e84118;
+        transform: scale(1.1);
+    }
+    
+    .add-option-btn {
+        padding: 8px 16px;
+        margin-top: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-block;
+        border-radius: 6px;
     }
 </style>
 
@@ -159,40 +251,30 @@
 
         <h3 class="section-header">Existing Questions</h3>
         {% for question in quiz.questions.all %}
-            <div class="question-section">
+            <div class="question-section" id="question-{{ question.id }}">
                 <div class="form-group">
                     <label>Question:</label>
-                    <input type="text" name="question_{{ question.id }}" value="{{ question.text }}" required>
+                    <input type="text" name="question_{{ question.id }}_text" value="{{ question.text }}" required>
                 </div>
 
                 <div class="form-group">
-                    <label>Option 1:</label>
-                    <input type="text" name="question_{{ question.id }}_option1" value="{{ question.option1 }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Option 2:</label>
-                    <input type="text" name="question_{{ question.id }}_option2" value="{{ question.option2 }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Option 3:</label>
-                    <input type="text" name="question_{{ question.id }}_option3" value="{{ question.option3 }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Option 4:</label>
-                    <input type="text" name="question_{{ question.id }}_option4" value="{{ question.option4 }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Correct Option:</label>
-                    <select name="question_{{ question.id }}_correct_option">
-                        <option value="1" {% if question.correct_option == 1 %}selected{% endif %}>Option 1</option>
-                        <option value="2" {% if question.correct_option == 2 %}selected{% endif %}>Option 2</option>
-                        <option value="3" {% if question.correct_option == 3 %}selected{% endif %}>Option 3</option>
-                        <option value="4" {% if question.correct_option == 4 %}selected{% endif %}>Option 4</option>
-                    </select>
+                    <label>Options:</label>
+                    <div class="options-container" id="options-container-{{ question.id }}">
+                        {% for option in question.options.all %}
+                            <div class="option-row">
+                                <input type="hidden" name="question_{{ question.id }}_option_ids" value="{{ option.id }}">
+                                <input type="text" name="question_{{ question.id }}_option_text_{{ forloop.counter0 }}" value="{{ option.text }}" class="option-text" required>
+                                <div class="option-checkbox-container">
+                                    <input type="checkbox" name="question_{{ question.id }}_is_correct_{{ forloop.counter0 }}" id="question_{{ question.id }}_is_correct_{{ forloop.counter0 }}" class="option-correct" {% if option.is_correct %}checked{% endif %}>
+                                    <label for="question_{{ question.id }}_is_correct_{{ forloop.counter0 }}" class="option-correct-label">Correct</label>
+                                </div>
+                                {% if question.options.count > 2 %}
+                                    <button type="button" class="remove-option-btn" onclick="removeOption(this)">×</button>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="add-option-btn" onclick="addOption({{ question.id }})">+ Add Option</button>
                 </div>
 
                 <a href="{% url 'delete_question' question.id %}" class="delete-question-btn">🗑️</a>
@@ -229,37 +311,213 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Option 1:</label>
-                    <input type="text" name="new_question_${newQuestionCount}_option1" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Option 2:</label>
-                    <input type="text" name="new_question_${newQuestionCount}_option2" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Option 3:</label>
-                    <input type="text" name="new_question_${newQuestionCount}_option3" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Option 4:</label>
-                    <input type="text" name="new_question_${newQuestionCount}_option4" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Correct Option:</label>
-                    <select name="new_question_${newQuestionCount}_correct_option">
-                        <option value="1">Option 1</option>
-                        <option value="2">Option 2</option>
-                        <option value="3">Option 3</option>
-                        <option value="4">Option 4</option>
-                    </select>
+                    <label>Options:</label>
+                    <div class="options-container" id="new-question-${newQuestionCount}-options">
+                        <div class="option-row">
+                            <input type="text" name="new_question_${newQuestionCount}_option_text_0" placeholder="Option 1" class="option-text" required>
+                            <div class="option-checkbox-container">
+                                <input type="checkbox" name="new_question_${newQuestionCount}_is_correct_0" id="new_question_${newQuestionCount}_is_correct_0" class="option-correct">
+                                <label for="new_question_${newQuestionCount}_is_correct_0" class="option-correct-label">Correct</label>
+                            </div>
+                        </div>
+                        <div class="option-row">
+                            <input type="text" name="new_question_${newQuestionCount}_option_text_1" placeholder="Option 2" class="option-text" required>
+                            <div class="option-checkbox-container">
+                                <input type="checkbox" name="new_question_${newQuestionCount}_is_correct_1" id="new_question_${newQuestionCount}_is_correct_1" class="option-correct">
+                                <label for="new_question_${newQuestionCount}_is_correct_1" class="option-correct-label">Correct</label>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="new_question_${newQuestionCount}_option_count" id="new-question-${newQuestionCount}-option-count" value="2">
+                    <button type="button" class="add-option-btn" onclick="addNewQuestionOption(${newQuestionCount})">+ Add Option</button>
                 </div>
             </div>
         `;
+        
         container.insertAdjacentHTML('beforeend', questionHTML);
     }
+    
+    function addOption(questionId) {
+        const container = document.getElementById(`options-container-${questionId}`);
+        const optionRows = container.querySelectorAll('.option-row');
+        const optionCount = optionRows.length;
+        
+        const optionHTML = `
+            <div class="option-row">
+                <input type="text" name="question_${questionId}_option_text_${optionCount}" class="option-text" required>
+                <div class="option-checkbox-container">
+                    <input type="checkbox" name="question_${questionId}_is_correct_${optionCount}" id="question_${questionId}_is_correct_${optionCount}" class="option-correct">
+                    <label for="question_${questionId}_is_correct_${optionCount}" class="option-correct-label">Correct</label>
+                </div>
+                <button type="button" class="remove-option-btn" onclick="removeOption(this)">×</button>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', optionHTML);
+        
+        // Add remove buttons to all option rows if we have more than 2 options
+        if (optionCount === 1) {
+            const firstOption = container.querySelector('.option-row');
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'remove-option-btn';
+            removeBtn.textContent = '×';
+            removeBtn.onclick = function() { removeOption(this); };
+            firstOption.appendChild(removeBtn);
+        }
+    }
+    
+    function addNewQuestionOption(questionNum) {
+        const container = document.getElementById(`new-question-${questionNum}-options`);
+        const countElement = document.getElementById(`new-question-${questionNum}-option-count`);
+        
+        let optionCount = parseInt(countElement.value);
+        
+        const optionHTML = `
+            <div class="option-row">
+                <input type="text" name="new_question_${questionNum}_option_text_${optionCount}" placeholder="Option ${optionCount + 1}" class="option-text" required>
+                <div class="option-checkbox-container">
+                    <input type="checkbox" name="new_question_${questionNum}_is_correct_${optionCount}" id="new_question_${questionNum}_is_correct_${optionCount}" class="option-correct">
+                    <label for="new_question_${questionNum}_is_correct_${optionCount}" class="option-correct-label">Correct</label>
+                </div>
+                <button type="button" class="remove-option-btn" onclick="removeNewQuestionOption(this, ${questionNum})">×</button>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', optionHTML);
+        optionCount++;
+        countElement.value = optionCount;
+        
+        // Add remove buttons to all option rows if we have more than 2 options
+        if (optionCount === 3) {
+            const optionRows = container.querySelectorAll('.option-row');
+            for (let i = 0; i < optionRows.length - 1; i++) {
+                if (!optionRows[i].querySelector('.remove-option-btn')) {
+                    const removeBtn = document.createElement('button');
+                    removeBtn.type = 'button';
+                    removeBtn.className = 'remove-option-btn';
+                    removeBtn.textContent = '×';
+                    removeBtn.onclick = function() { removeNewQuestionOption(this, questionNum); };
+                    optionRows[i].appendChild(removeBtn);
+                }
+            }
+        }
+    }
+    
+    function removeOption(button) {
+        const optionRow = button.closest('.option-row');
+        const container = optionRow.closest('.options-container');
+        const optionRows = container.querySelectorAll('.option-row');
+        
+        // Don't allow removal if there are only 2 options left
+        if (optionRows.length <= 2) {
+            return;
+        }
+        
+        optionRow.remove();
+        
+        // If we now have 2 options, remove all remove buttons
+        if (optionRows.length === 3) {
+            const remainingRows = container.querySelectorAll('.option-row');
+            remainingRows.forEach(row => {
+                const removeBtn = row.querySelector('.remove-option-btn');
+                if (removeBtn) {
+                    removeBtn.remove();
+                }
+            });
+        }
+    }
+    
+    function removeNewQuestionOption(button, questionNum) {
+        const optionRow = button.closest('.option-row');
+        const container = optionRow.closest('.options-container');
+        const countElement = document.getElementById(`new-question-${questionNum}-option-count`);
+        const optionRows = container.querySelectorAll('.option-row');
+        
+        // Don't allow removal if there are only 2 options left
+        if (optionRows.length <= 2) {
+            return;
+        }
+        
+        optionRow.remove();
+        
+        // Update the option count
+        let optionCount = parseInt(countElement.value) - 1;
+        countElement.value = optionCount;
+        
+        // Reindex the remaining options
+        const remainingRows = container.querySelectorAll('.option-row');
+        remainingRows.forEach((row, index) => {
+            const textInput = row.querySelector('input[type="text"]');
+            const checkbox = row.querySelector('input[type="checkbox"]');
+            const label = row.querySelector('label');
+            
+            textInput.name = `new_question_${questionNum}_option_text_${index}`;
+            textInput.placeholder = `Option ${index + 1}`;
+            checkbox.name = `new_question_${questionNum}_is_correct_${index}`;
+            checkbox.id = `new_question_${questionNum}_is_correct_${index}`;
+            label.setAttribute('for', `new_question_${questionNum}_is_correct_${index}`);
+        });
+        
+        // If we now have 2 options, remove all remove buttons
+        if (remainingRows.length === 2) {
+            remainingRows.forEach(row => {
+                const removeBtn = row.querySelector('.remove-option-btn');
+                if (removeBtn) {
+                    removeBtn.remove();
+                }
+            });
+        }
+    }
+    
+    // Form validation before submission
+    document.getElementById('quizForm').addEventListener('submit', function(event) {
+        // Validate existing questions
+        const existingQuestions = document.querySelectorAll('.question-section[id^="question-"]');
+        for (const question of existingQuestions) {
+            const optionsContainer = question.querySelector('.options-container');
+            const options = optionsContainer.querySelectorAll('.option-row');
+            
+            // Check if at least one option is marked as correct
+            let hasCorrectOption = false;
+            for (const option of options) {
+                if (option.querySelector('input[type="checkbox"]').checked) {
+                    hasCorrectOption = true;
+                    break;
+                }
+            }
+            
+            if (!hasCorrectOption) {
+                const questionId = question.id.split('-')[1];
+                const questionText = question.querySelector('input[name^="question_"][name$="_text"]').value;
+                alert(`Question "${questionText}" must have at least one correct option.`);
+                event.preventDefault();
+                return;
+            }
+        }
+        
+        // Validate new questions
+        const newQuestions = document.querySelectorAll('#new-questions-container .question-section');
+        for (const question of newQuestions) {
+            const questionText = question.querySelector('input[name^="new_question_"][name$="_text"]').value;
+            const optionsContainer = question.querySelector('.options-container');
+            const options = optionsContainer.querySelectorAll('.option-row');
+            
+            // Check if at least one option is marked as correct
+            let hasCorrectOption = false;
+            for (const option of options) {
+                if (option.querySelector('input[type="checkbox"]').checked) {
+                    hasCorrectOption = true;
+                    break;
+                }
+            }
+            
+            if (!hasCorrectOption) {
+                alert(`New question "${questionText}" must have at least one correct option.`);
+                event.preventDefault();
+                return;
+            }
+        }
+    });
 </script>
 {% endblock %}
