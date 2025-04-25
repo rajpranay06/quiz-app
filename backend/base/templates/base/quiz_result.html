@@ -2,25 +2,47 @@
 
 {% block content %}
 <style>
+    :root {
+        --dark-bg: #121212;
+        --dark-surface: #1e1e1e;
+        --dark-surface-lighter: #2d2d2d;
+        --dark-surface-darker: #181818;
+        --dark-border: #333333;
+        --dark-text-primary: #e0e0e0;
+        --dark-text-secondary: #a0a0a0;
+        --dark-accent: #bb86fc;
+        --dark-accent-lighter: rgba(187, 134, 252, 0.2);
+        --dark-accent-contrast: #000;
+        --dark-error: #cf6679;
+        --dark-success: #03dac5;
+        --dark-warning: #ffb74d;
+        --dark-danger: #ff4d4d;
+    }
+    
+    body {
+        background-color: var(--dark-bg);
+        color: var(--dark-text-primary);
+    }
+    
     .quiz-container {
         max-width: 800px;
         margin: 40px auto;
         padding: 30px;
         text-align: center;
-        background: #ffffff;
+        background-color: var(--dark-surface);
         border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
     .quiz-header {
         margin-bottom: 30px;
         padding-bottom: 20px;
-        border-bottom: 2px solid #f0f0f0;
+        border-bottom: 2px solid var(--dark-border);
     }
     
     h2 {
-        color: #2c3e50;
+        color: var(--dark-text-primary);
         font-size: 28px;
         margin-bottom: 10px;
     }
@@ -28,7 +50,7 @@
     .score-container {
         margin: 30px 0;
         font-size: 18px;
-        color: #34495e;
+        color: var(--dark-text-secondary);
         line-height: 1.6;
     }
     
@@ -36,15 +58,14 @@
         font-size: 42px;
         font-weight: bold;
         margin: 20px 0;
-        color: #3498db;
     }
     
     .score-display .score {
-        color: #3498db;
+        color: var(--dark-accent);
     }
     
     .score-display .total {
-        color: #7f8c8d;
+        color: var(--dark-text-secondary);
     }
     
     .feedback-message {
@@ -52,25 +73,25 @@
         margin: 30px 0;
         padding: 20px;
         border-radius: 10px;
-        background: #f8f9fa;
+        background: var(--dark-surface-lighter);
     }
     
     .perfect-score {
-        background: #e8f8f5;
-        color: #27ae60;
-        border-left: 5px solid #2ecc71;
+        background: rgba(3, 218, 197, 0.1);
+        color: var(--dark-success);
+        border-left: 5px solid var(--dark-success);
     }
     
     .good-score {
-        background: #eaf2fd;
-        color: #2980b9;
-        border-left: 5px solid #3498db;
+        background: rgba(187, 134, 252, 0.1);
+        color: var(--dark-accent);
+        border-left: 5px solid var(--dark-accent);
     }
     
     .keep-practicing {
-        background: #fef9e7;
-        color: #f39c12;
-        border-left: 5px solid #f1c40f;
+        background: rgba(255, 183, 77, 0.1);
+        color: var(--dark-warning);
+        border-left: 5px solid var(--dark-warning);
     }
     
     .emoji {
@@ -85,8 +106,8 @@
     
     .action-btn {
         display: inline-block;
-        background-color: #3498db;
-        color: white;
+        background-color: var(--dark-accent);
+        color: var(--dark-accent-contrast);
         padding: 14px 28px;
         font-size: 16px;
         text-decoration: none;
@@ -94,13 +115,13 @@
         transition: 0.3s;
         font-weight: 600;
         letter-spacing: 0.5px;
-        box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
     
     .action-btn:hover {
-        background-color: #2980b9;
+        background-color: #c99ffe;
         transform: translateY(-2px);
-        box-shadow: 0 6px 8px rgba(52, 152, 219, 0.3);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
     }
     
     .action-btn:active {
@@ -108,14 +129,14 @@
     }
     
     .secondary-btn {
-        background-color: #ecf0f1;
-        color: #34495e;
+        background-color: var(--dark-surface-lighter);
+        color: var(--dark-text-primary);
         margin-left: 15px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
     
     .secondary-btn:hover {
-        background-color: #e0e6e8;
+        background-color: var(--dark-border);
     }
     
     .progress-circle {
@@ -124,7 +145,7 @@
         height: 150px;
         margin: 20px auto;
         border-radius: 50%;
-        background: #ecf0f1;
+        background: var(--dark-surface-darker);
     }
     
     .progress-circle-fill {
@@ -137,10 +158,11 @@
         top: 10px;
         left: 10px;
         border-radius: 50%;
-        background: white;
+        background: var(--dark-surface);
         z-index: 1;
         font-size: 28px;
         font-weight: bold;
+        color: var(--dark-text-primary);
     }
     
     .progress-circle:before {
@@ -152,8 +174,8 @@
         height: 150px;
         border-radius: 50%;
         background: conic-gradient(
-            #3498db calc(var(--percentage) * 1%),
-            #ecf0f1 0
+            var(--dark-accent) calc(var(--percentage) * 1%),
+            var(--dark-surface-darker) 0
         );
     }
 </style>
