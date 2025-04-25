@@ -1,77 +1,152 @@
-# Mind Clash - Quiz Application
+# Quiz Application
 
-Mind clash is a web based quiz application, where users can create, play and manage quizzes.  
+A full-featured quiz platform built with Django REST Framework and JavaScript, allowing users to create, take, and analyze quizzes.
 
-## Application Features
+## Features
 
-✅ User Registration & Authentication  
-✅ Token-based Authentication (DRF Tokens)  
-✅ Create & Play Quizzes    
-✅ User Stats Dashboard  
-✅ CI Integration with CircleCI  
-✅ Dockerized Deployment  
+- **User Authentication**
+  - JWT (JSON Web Token) based authentication
+  - Register and login functionality
+  - Token refresh mechanism
+  
+- **Quiz Management**
+  - Create custom quizzes
+  - Add multiple-choice questions with single or multiple correct answers
+  - Edit and delete quizzes and questions
+  - Track quiz statistics
 
-## 🛠️ **API Endpoints**
+- **Quiz Taking**
+  - Join quizzes via quiz codes
+  - Interactive quiz interface
+  - Real-time scoring
+  - Multiple attempts support
 
-### **Authentication**
+- **Statistics and Analytics**
+  - User performance tracking
+  - Quiz-specific statistics
+  - Visual performance charts
 
-| Method |   Endpoint   |         Description             |
-|--------|--------------|---------------------------------|
-| `POST` | `/register/` | User registration               |
-| `POST` | `/login/`    | User login (returns auth token) |
-| `POST` | `/logout/`   | User logout (deletes token)     | 
+## Tech Stack
 
-### **Quiz Management**
+- **Backend**
+  - Django + Django REST Framework
+  - SQLite database
+  - REST API with JWT authentication
+  - Swagger API documentation
 
-|  Method  |         Endpoint            |         Description             |
-|----------|-----------------------------|---------------------------------|
-| `POST`   | `/create-quiz/`             | Create a new quiz               |
-| `POST`   | `/add_questions/<quiz_id>/` | Add questions to a quiz         |
-| `GET`    | `/play_quiz/<quiz_id>/`     | Play a quiz                     |
-| `POST`   | `/submit_quiz/<quiz_id>/`   | Submit quiz and calculate score |
-| `PUT`    | `/update_quiz/<quiz_id>/`   | Update an existing quiz         |
-| `DELETE` | `/delete_quiz/<quiz_id>/`   | Delete a quiz                   |
+- **Frontend**
+  - HTML/CSS/JavaScript
+  - Bootstrap for responsive design
+  - Chart.js for data visualization
 
+## Setup Instructions
 
+### Prerequisites
 
-# Implementation Details
+- Python 3.8+
+- pip (Python package manager)
 
-## User Authentication
+### Installation
 
-Implemented Django authentication for user registration and login. Integrated Token Authentication using Django Rest Framework (DRF). Users receive a token upon login, which is required for API authentication.
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/quiz-app.git
+   cd quiz-app
+   ```
 
-# Quiz Creation
+2. **Create a virtual environment**
+   ```bash
+   python -m venv venv
+   
+   # Windows
+   venv\Scripts\activate
+   
+   # Linux/Mac
+   source venv/bin/activate
+   ```
 
-Users can create quizzes via an API (/create-quiz/).
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Each quiz has a title, description, and creator (user) stored in the Quiz model.
+4. **Setup database**
+   ```bash
+   cd backend
+   python manage.py migrate
+   ```
 
-# Adding Questions
+5. **Create a superuser**
+   ```bash
+   python manage.py createsuperuser
+   ```
 
-Users can add questions via an API (/add-questions/<quiz_id>/).
+### Running the Application
 
-Each question has 4 options, and one option is marked as correct. Used the Question model to store quiz-related questions.
+1. **Start the backend server**
+   ```bash
+   cd backend
+   python manage.py runserver
+   ```
 
-# Playing a Quiz
-Users can select a quiz and answer questions (/play_quiz/<quiz_id>/). Implemented form-based UI for answering questions.
+2. **Access the application**
+   - Web interface: http://localhost:8000/
+   - Admin panel: http://localhost:8000/admin/
+   - API documentation: http://localhost:8000/swagger/
 
-The backend evaluates the answers and calculates scores.
+## API Usage
 
-# Updating & Deleting Quizzes
-Users can edit quizzes they created (/update-quiz/<quiz_id>/).
+The application provides a comprehensive REST API. Please refer to the [JWT Authentication Guide](backend/JWT_AUTH_GUIDE.md) for details on how to authenticate with the API.
 
-Added a feature to delete individual questions or the entire quiz (/delete-quiz/<quiz_id>/).
+### Key Endpoints
 
-# Security Features
-Implemented Token Authentication for secure API access. CORS protection to allow frontend-backend communication.
+- **Authentication**
+  - `POST /api/auth/register/` - Register a new user
+  - `POST /api/auth/login/` - Login and get tokens
+  - `POST /api/token/refresh/` - Refresh access token
 
-Permissions enforced so only quiz creators can edit or delete their quizzes.
+- **Quizzes**
+  - `GET /api/quizzes/` - List all quizzes
+  - `POST /api/quizzes/create/` - Create a new quiz
+  - `GET /api/quizzes/{id}/` - Get quiz details
+  - `PUT /api/quizzes/{id}/update/` - Update a quiz
+  - `DELETE /api/quizzes/{id}/delete/` - Delete a quiz
 
-# Technologies Used
-✅ Django & Django REST Framework (Backend)
-✅ SQLite (Database)
-✅ Docker (Containerization)
-✅ CircleCI (Continuous Integration)
-✅ Swagger (API Documentation)
+- **Questions**
+  - `GET /api/quizzes/{id}/questions/` - Get quiz questions
+  - `POST /api/quizzes/{id}/add-question/` - Add a question to a quiz
+  - `PUT /api/questions/{id}/update/` - Update a question
+  - `DELETE /api/questions/{id}/delete/` - Delete a question
+
+- **Quiz Taking**
+  - `POST /api/join-quiz/` - Join a quiz by code
+  - `POST /api/quizzes/{id}/submit/` - Submit quiz answers
+
+- **Statistics**
+  - `GET /api/user-stats/` - Get user statistics
+  - `GET /api/quizzes/{id}/statistics/` - Get quiz statistics
+
+## Application Structure
+
+```
+quiz-app/
+├── backend/               # Django backend
+│   ├── backend/           # Django project settings
+│   └── base/              # Main application
+│       ├── api/           # API views, serializers, and URLs
+│       ├── models/        # Database models
+│       ├── templates/     # HTML templates
+│       └── static/        # Static files (CSS, JS, images)
+└── frontend/              # Frontend code (if separated)
+```
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- Django and Django REST Framework documentation
+- JWT authentication implementation based on djangorestframework-simplejwt
 
 

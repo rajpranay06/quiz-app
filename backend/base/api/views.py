@@ -19,6 +19,13 @@ from .serializers import (
 def getRoutes(request):
     routes = [
         'GET /api',
+        # Authentication routes
+        'POST /api/auth/register/',
+        'POST /api/auth/login/',
+        'POST /api/token/',
+        'POST /api/token/refresh/',
+        'POST /api/token/verify/',
+        # Quiz routes
         'GET /api/quizzes',
         'GET /api/quizzes/:id',
         'POST /api/quizzes/create',
@@ -28,13 +35,16 @@ def getRoutes(request):
         'POST /api/quizzes/:id/add-question',
         'POST /api/quizzes/:id/submit',
         'GET /api/quizzes/:id/statistics',
+        # Question routes
         'GET /api/questions',
         'GET /api/questions/:id',
         'PUT /api/questions/:id/update',
         'DELETE /api/questions/:id/delete',
         'POST /api/questions/:id/add-option',
+        # User stats routes
         'GET /api/user-stats',
         'GET /api/user-stats/summary',
+        # Join quiz
         'POST /api/join-quiz'
     ]
     return Response(routes)

@@ -1,8 +1,13 @@
 from django.urls import path
 from . import views
+from . import auth
 
 urlpatterns = [
     path('', views.getRoutes, name='api-routes'),
+    
+    # Authentication routes
+    path('auth/register/', auth.register_user, name='register'),
+    path('auth/login/', auth.login_user, name='login'),
     
     # Quiz routes
     path('quizzes/', views.getQuizzes, name='quizzes'),
