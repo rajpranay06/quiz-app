@@ -1,5 +1,5 @@
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Count, Avg
@@ -51,35 +51,35 @@ def getRoutes(request):
 
 # Quiz Views
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def getQuizzes(request):
     quizzes = Quiz.objects.all().order_by('-created_at')
     serializer = QuizSerializer(quizzes, many=True)
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def getQuiz(request, pk):
     quiz = get_object_or_404(Quiz, id=pk)
     serializer = QuizDetailSerializer(quiz)
     return Response(serializer.data)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def createQuiz(request):
     serializer = QuizSerializer(data=request.data)
     if serializer.is_valid():
-        serializer.save(creator=request.user)
+        # If user is authenticated, associate the quiz with them
+        if request.user.is_authenticated:
+            serializer.save(creator=request.user)
+        else:
+            serializer.save()
         return Response(serializer.data, status=201)
     return Response(serializer.errors, status=400)
 
 @api_view(['PUT'])
-@permission_classes([IsAuthenticated])
 def updateQuiz(request, pk):
     quiz = get_object_or_404(Quiz, id=pk)
     
-    # Check permissions
-    if quiz.creator != request.user:
+    # Check permissions if user is authenticated
+    if request.user.is_authenticated and quiz.creator and quiz.creator != request.user:
         return Response({"detail": "You don't have permission to edit this quiz."}, status=403)
     
     serializer = QuizSerializer(quiz, data=request.data)
@@ -89,19 +89,17 @@ def updateQuiz(request, pk):
     return Response(serializer.errors, status=400)
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
 def deleteQuiz(request, pk):
     quiz = get_object_or_404(Quiz, id=pk)
     
-    # Check permissions
-    if quiz.creator != request.user:
+    # Check permissions if user is authenticated
+    if request.user.is_authenticated and quiz.creator and quiz.creator != request.user:
         return Response({"detail": "You don't have permission to delete this quiz."}, status=403)
     
     quiz.delete()
     return Response(status=204)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def getQuizQuestions(request, pk):
     quiz = get_object_or_404(Quiz, id=pk)
     questions = Question.objects.filter(quiz=quiz)
@@ -109,12 +107,11 @@ def getQuizQuestions(request, pk):
     return Response(serializer.data)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def addQuestion(request, pk):
     quiz = get_object_or_404(Quiz, id=pk)
     
-    # Check permissions
-    if quiz.creator != request.user:
+    # Check permissions if user is authenticated
+    if request.user.is_authenticated and quiz.creator and quiz.creator != request.user:
         return Response({"detail": "You don't have permission to add questions to this quiz."}, status=403)
     
     # Create question
@@ -159,9 +156,13 @@ def addQuestion(request, pk):
     return Response(serializer.data, status=201)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def submitQuiz(request, pk):
     quiz = get_object_or_404(Quiz, id=pk)
+    
+    # Handle anonymous users
+    if not request.user.is_authenticated:
+        return Response({"detail": "You need to be logged in to submit quiz answers and save your score."}, status=403)
+    
     user = request.user
     
     serializer = QuizSubmissionSerializer(data=request.data)
@@ -239,7 +240,6 @@ def submitQuiz(request, pk):
     })
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def getQuizStatistics(request, pk):
     quiz = get_object_or_404(Quiz, id=pk)
     
@@ -279,7 +279,6 @@ def getQuizStatistics(request, pk):
 
 # Question Views
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def getQuestions(request):
     quiz_id = request.query_params.get('quiz_id')
     if quiz_id:
@@ -291,19 +290,17 @@ def getQuestions(request):
     return Response(serializer.data)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
 def getQuestion(request, pk):
     question = get_object_or_404(Question, id=pk)
     serializer = QuestionSerializer(question)
     return Response(serializer.data)
 
 @api_view(['PUT'])
-@permission_classes([IsAuthenticated])
 def updateQuestion(request, pk):
     question = get_object_or_404(Question, id=pk)
     
-    # Check permissions
-    if question.quiz.creator != request.user:
+    # Check permissions if user is authenticated
+    if request.user.is_authenticated and question.quiz.creator and question.quiz.creator != request.user:
         return Response({"detail": "You don't have permission to edit this question."}, status=403)
     
     serializer = QuestionSerializer(question, data=request.data)
@@ -313,24 +310,22 @@ def updateQuestion(request, pk):
     return Response(serializer.errors, status=400)
 
 @api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
 def deleteQuestion(request, pk):
     question = get_object_or_404(Question, id=pk)
     
-    # Check permissions
-    if question.quiz.creator != request.user:
+    # Check permissions if user is authenticated
+    if request.user.is_authenticated and question.quiz.creator and question.quiz.creator != request.user:
         return Response({"detail": "You don't have permission to delete this question."}, status=403)
     
     question.delete()
     return Response(status=204)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def addOption(request, pk):
     question = get_object_or_404(Question, id=pk)
     
-    # Check permissions
-    if question.quiz.creator != request.user:
+    # Check permissions if user is authenticated
+    if request.user.is_authenticated and question.quiz.creator and question.quiz.creator != request.user:
         return Response({"detail": "You don't have permission to add options to this question."}, status=403)
     
     # Create option
@@ -349,7 +344,7 @@ def addOption(request, pk):
     serializer = OptionSerializer(option)
     return Response(serializer.data, status=201)
 
-# User Stats Views
+# User Stats Views - these still require authentication
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def getUserStats(request):
@@ -399,7 +394,6 @@ def getUserStatsSummary(request):
     return Response(stats)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def joinQuiz(request):
     code = request.data.get('code')
     
