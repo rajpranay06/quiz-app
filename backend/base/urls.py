@@ -23,6 +23,7 @@ urlpatterns = [
     path('lobby/', lobbyPage.lobby, name="lobby"),
     path('', homePage.home, name='home'),
     
-    # API URLs
+    # API URLs - keep these separate from the main web app routes
+    # This should only be used for API testing, not for regular web navigation
     path('api/', include('base.api.urls')),
 ]
