@@ -1,9 +1,10 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Quiz, Question
+from .models import Quiz, Question, Option
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.forms import inlineformset_factory
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -58,45 +59,56 @@ class QuizForm(forms.ModelForm):
         model = Quiz
         fields = ['title', 'description']
         widgets = {
-            'title': forms.TextInput(attrs={'placeholder': 'Enter quiz title'}),
-            'description': forms.Textarea(attrs={'placeholder': 'Enter quiz description'}),
+            'title': forms.TextInput(attrs={'placeholder': 'Enter quiz title', 'class': 'form-control'}),
+            'description': forms.Textarea(attrs={'placeholder': 'Enter quiz description', 'class': 'form-control', 'rows': 4}),
         }
+    
+    def clean_title(self):
+        title = self.cleaned_data.get('title')
+        
+        # Check if this is an update (instance with id exists)
+        instance = getattr(self, 'instance', None)
+        if instance and instance.pk:
+            # Exclude the current instance from the uniqueness check
+            quizzes = Quiz.objects.filter(title=title).exclude(pk=instance.pk)
+        else:
+            # New quiz - check against all existing quizzes
+            quizzes = Quiz.objects.filter(title=title)
+            
+        if quizzes.exists():
+            raise forms.ValidationError("A quiz with this title already exists. Please choose a different title.")
+            
+        return title
 
 class QuestionForm(forms.ModelForm):
-    correct_option = forms.ChoiceField(
-        choices=[(1, 'Option 1'), (2, 'Option 2'), (3, 'Option 3'), (4, 'Option 4')],
-        widget=forms.RadioSelect
-    )
-
     class Meta:
         model = Question
-        fields = ['text', 'option1', 'option2', 'option3', 'option4', 'correct_option']  # Removed 'quiz'
+        fields = ['text']
         widgets = {
-            'text': forms.TextInput(attrs={'placeholder': 'Enter question text'}),
-            'option1': forms.TextInput(attrs={'placeholder': 'Option 1'}),
-            'option2': forms.TextInput(attrs={'placeholder': 'Option 2'}),
-            'option3': forms.TextInput(attrs={'placeholder': 'Option 3'}),
-            'option4': forms.TextInput(attrs={'placeholder': 'Option 4'}),
+            'text': forms.TextInput(attrs={'placeholder': 'Enter question text', 'class': 'form-control mb-3'}),
         }
 
-    def clean(self):
-        cleaned_data = super().clean()
-        correct_option = cleaned_data.get("correct_option")
-        options = [
-            cleaned_data.get("option1"),
-            cleaned_data.get("option2"),
-            cleaned_data.get("option3"),
-            cleaned_data.get("option4"),
-        ]
+class OptionForm(forms.ModelForm):
+    class Meta:
+        model = Option
+        fields = ['text', 'is_correct']
+        widgets = {
+            'text': forms.TextInput(attrs={'placeholder': 'Enter option text', 'class': 'form-control'}),
+            'is_correct': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
 
-        # Ensure the correct option is not empty
-        if not options[int(correct_option) - 1]:  
-            raise forms.ValidationError("The selected correct option cannot be empty.")
-
-        return cleaned_data
+OptionFormSet = inlineformset_factory(
+    Question, 
+    Option, 
+    form=OptionForm, 
+    extra=2,  # Start with 2 options 
+    can_delete=True,
+    min_num=2,  # Require at least 2 options
+    validate_min=True
+)
     
 class JoinQuizForm(forms.Form):
     quiz_id = forms.IntegerField(
         label="Enter Quiz ID",
-        widget=forms.NumberInput(attrs={'placeholder': 'Enter Quiz ID'})
+        widget=forms.NumberInput(attrs={'placeholder': 'Enter Quiz ID', 'class': 'form-control'})
     )

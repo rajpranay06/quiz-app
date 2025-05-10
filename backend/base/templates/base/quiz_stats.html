@@ -1,0 +1,524 @@
+{% extends 'main.html' %}
+{% block content %}
+
+<style>
+  :root {
+    --primary-bg: #121212;
+    --secondary-bg: #1e1e1e;
+    --card-bg: #252525;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --border-color: #333333;
+    --hover-bg: #333333;
+    --table-header-bg: #2c2c2c;
+    --table-stripe-bg: #2a2a2a;
+    --progress-bg: #3a3a3a;
+    --success-color: #4caf50;
+    --danger-color: #f44336;
+    --warning-color: #ff9800;
+    --info-color: #2196f3;
+    --primary-color: #7b68ee;
+    --secondary-color: #03dac5;
+  }
+  
+  body {
+    background-color: var(--primary-bg);
+    color: var(--text-primary);
+  }
+
+  .quiz-stats-container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 30px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    position: relative;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .quiz-title {
+    margin: 0;
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+
+  .quiz-meta {
+    margin-top: 10px;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+
+  .quiz-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .stat-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .stat-card {
+    padding: 24px;
+    border-radius: 12px;
+    background: var(--secondary-bg);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.4);
+    background: var(--hover-bg);
+  }
+
+  .stat-value {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 10px 0;
+  }
+
+  .stat-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 5px;
+  }
+
+  .stat-subtitle {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .card-participants .stat-value {
+    color: var(--info-color);
+  }
+
+  .card-avg .stat-value {
+    color: var(--success-color);
+  }
+
+  .card-highest .stat-value {
+    color: var(--primary-color);
+  }
+
+  .card-pass .stat-value {
+    color: var(--warning-color);
+  }
+
+  .card-box {
+    background: var(--secondary-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    margin-bottom: 25px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 18px 25px;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-header h5 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 18px;
+  }
+
+  .card-body {
+    padding: 20px 25px;
+  }
+
+  .play-btn {
+    background: var(--primary-color);
+    color: black;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+  }
+
+  .play-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 14px rgba(123, 104, 238, 0.4);
+    background: #a88fff;
+  }
+
+  .play-icon {
+    font-size: 20px;
+  }
+
+  .participants-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .participants-table th {
+    text-align: left;
+    padding: 12px 15px;
+    background-color: var(--table-header-bg);
+    color: var(--text-primary);
+    font-weight: 600;
+    border-bottom: 2px solid var(--border-color);
+  }
+
+  .participants-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+  }
+
+  .participants-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .participants-table tr:hover td {
+    background-color: var(--hover-bg);
+  }
+
+  .badge {
+    padding: 6px 10px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+  }
+
+  .distribution-legend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 15px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-secondary);
+  }
+
+  .empty-state .icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    display: block;
+  }
+  
+  /* Override Chart.js tooltip styling */
+  canvas {
+    filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.15));
+  }
+  
+  .progress {
+    height: 10px;
+    background-color: var(--progress-bg);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    transition: width 0.6s ease;
+  }
+  
+  .bg-success {
+    background-color: var(--success-color) !important;
+  }
+
+  .bg-primary {
+    background-color: var(--primary-color) !important;
+  }
+
+  .bg-danger {
+    background-color: var(--danger-color) !important;
+  }
+
+  .bg-warning {
+    background-color: var(--warning-color) !important;
+  }
+
+  .bg-info {
+    background-color: var(--info-color) !important;
+  }
+</style>
+
+<div class="quiz-stats-container">
+  <div class="quiz-header">
+    <div>
+      <h1 class="quiz-title">{{ quiz.title }}</h1>
+      <div class="quiz-meta">
+        Created by: {{ quiz.creator.username }} | {{ quiz.questions.count }} questions | Created: {{ quiz.created_at|date:"M d, Y" }}
+      </div>
+    </div>
+    
+    <div class="quiz-actions">
+      <a href="{% url 'play_quiz' quiz.id %}" class="play-btn">
+        <span class="play-icon">▶️</span> Play Quiz
+      </a>
+    </div>
+  </div>
+  
+  <div class="stat-cards">
+    <div class="stat-card card-participants">
+      <div class="stat-title">Participants</div>
+      <div class="stat-value">{{ stats.total_participants }}</div>
+      <div class="stat-subtitle">quiz attempts</div>
+    </div>
+    
+    <div class="stat-card card-avg">
+      <div class="stat-title">Average Score</div>
+      <div class="stat-value">{{ stats.avg_score }}%</div>
+      <div class="stat-subtitle">across all attempts</div>
+    </div>
+    
+    <div class="stat-card card-highest">
+      <div class="stat-title">Highest Score</div>
+      <div class="stat-value">{{ stats.highest_score }}%</div>
+      <div class="stat-subtitle">{{ stats.highest_user }}</div>
+    </div>
+    
+    <div class="stat-card card-pass">
+      <div class="stat-title">Pass Rate</div>
+      <div class="stat-value">{{ stats.pass_rate }}%</div>
+      <div class="stat-subtitle">of participants passed</div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <!-- Score Distribution -->
+    <div class="col-lg-7 mb-4">
+      <div class="card-box">
+        <div class="card-header">
+          <h5>Score Distribution</h5>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="distributionChart"></canvas>
+          </div>
+          <div class="distribution-legend">
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: rgba(244, 67, 54, 0.7)"></div>
+              <span>0-49%</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: rgba(255, 152, 0, 0.7)"></div>
+              <span>50-69%</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: rgba(76, 175, 80, 0.7)"></div>
+              <span>70-89%</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: rgba(123, 104, 238, 0.7)"></div>
+              <span>90-100%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Question Performance -->
+    <div class="col-lg-5 mb-4">
+      <div class="card-box h-100">
+        <div class="card-header">
+          <h5>Question Performance</h5>
+        </div>
+        <div class="card-body p-0">
+          <div style="overflow-x: auto;">
+            <table class="participants-table">
+              <thead>
+                <tr>
+                  <th>Question</th>
+                  <th>Correct %</th>
+                  <th>Difficulty</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for question in stats.question_stats %}
+                <tr>
+                  <td>{{ question.text|truncatechars:30 }}</td>
+                  <td>{{ question.correct_percentage }}%</td>
+                  <td>
+                    {% if question.correct_percentage >= 80 %}
+                      <span class="badge bg-success">Easy</span>
+                    {% elif question.correct_percentage >= 50 %}
+                      <span class="badge bg-warning">Medium</span>
+                    {% else %}
+                      <span class="badge bg-danger">Hard</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="3">
+                    <div class="empty-state">
+                      <span class="icon">📋</span>
+                      <p>No question data available yet</p>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Recent Participants -->
+  <div class="card-box mb-4">
+    <div class="card-header">
+      <h5>Recent Participants</h5>
+    </div>
+    <div class="card-body p-0">
+      <div style="overflow-x: auto;">
+        <table class="participants-table">
+          <thead>
+            <tr>
+              <th>Participant</th>
+              <th>Score</th>
+              <th>Percentage</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for attempt in stats.recent_attempts %}
+            <tr>
+              <td>{{ attempt.user.username }}</td>
+              <td>{{ attempt.score }} / {{ quiz.questions.count }}</td>
+              <td>
+                {% if attempt.percentage >= 70 %}
+                  <span class="badge bg-success">{{ attempt.percentage }}%</span>
+                {% elif attempt.percentage >= 40 %}
+                  <span class="badge bg-warning">{{ attempt.percentage }}%</span>
+                {% else %}
+                  <span class="badge bg-danger">{{ attempt.percentage }}%</span>
+                {% endif %}
+              </td>
+              <td>{{ attempt.attempted_at|date:"M d, Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4">
+                <div class="empty-state">
+                  <span class="icon">👤</span>
+                  <p>No participants yet</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Distribution Chart
+    const distributionCtx = document.getElementById('distributionChart').getContext('2d');
+    new Chart(distributionCtx, {
+      type: 'pie',
+      data: {
+        labels: ['0-49%', '50-69%', '70-89%', '90-100%'],
+        datasets: [{
+          data: [
+            {{ stats.score_distribution.low }}, 
+            {{ stats.score_distribution.medium }}, 
+            {{ stats.score_distribution.high }}, 
+            {{ stats.score_distribution.excellent }}
+          ],
+          backgroundColor: [
+            'rgba(244, 67, 54, 0.7)',   // Red (Low) - danger color
+            'rgba(255, 152, 0, 0.7)',   // Orange (Medium) - warning color
+            'rgba(76, 175, 80, 0.7)',   // Green (High) - success color 
+            'rgba(123, 104, 238, 0.7)'  // Purple (Excellent) - primary color
+          ],
+          borderColor: [
+            'rgba(244, 67, 54, 1)',
+            'rgba(255, 152, 0, 1)',
+            'rgba(76, 175, 80, 1)',
+            'rgba(123, 104, 238, 1)'
+          ],
+          borderWidth: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+            labels: {
+              color: 'var(--text-primary)'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(20, 20, 20, 0.9)',
+            titleColor: '#ffffff',
+            bodyColor: '#ffffff',
+            borderColor: 'rgba(123, 104, 238, 0.5)',
+            borderWidth: 1,
+            padding: 12,
+            callbacks: {
+              label: function(context) {
+                const label = context.label || '';
+                const value = context.raw || 0;
+                const total = context.dataset.data.reduce((acc, val) => acc + val, 0);
+                const percentage = Math.round((value / total) * 100);
+                return `${label}: ${value} participants (${percentage}%)`;
+              }
+            }
+          }
+        },
+        cutout: '40%'
+      }
+    });
+  });
+</script>
+
+{% endblock %} 

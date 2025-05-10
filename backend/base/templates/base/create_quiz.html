@@ -2,67 +2,195 @@
 
 {% block content %}
 <style>
+    .create-page {
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+        min-height: calc(100vh - 100px);
+    }
+    
     .quiz-container {
-        max-width: 600px;
-        margin: auto;
-        padding: 20px;
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 680px;
+        background-color: var(--surface-bg);
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+    }
+    
+    .quiz-header {
+        padding: 30px;
+        background: linear-gradient(135deg, rgba(187, 134, 252, 0.1), rgba(3, 218, 198, 0.05));
         text-align: center;
+        position: relative;
     }
-
-    h2 {
-        color: #333;
-        margin-bottom: 15px;
+    
+    .quiz-header h2 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
     }
-
+    
+    .quiz-header p {
+        color: var(--text-secondary);
+        max-width: 80%;
+        margin: 0 auto;
+    }
+    
+    .quiz-form-container {
+        padding: 30px;
+    }
+    
     .quiz-form {
         display: flex;
         flex-direction: column;
-        gap: 15px;
-        text-align: left;
+        gap: 20px;
     }
-
-    .quiz-form input, .quiz-form select, .quiz-form textarea {
+    
+    .quiz-form p {
+        margin: 0;
+    }
+    
+    .quiz-form label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--text-secondary);
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .quiz-form input, 
+    .quiz-form select, 
+    .quiz-form textarea {
         width: 100%;
-        padding: 10px;
-        border: 2px solidrgb(255, 0, 4);
-        border-radius: 5px;
+        padding: 15px 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
         font-size: 16px;
-        background-color: white;
-        transition: border 0.3s ease-in-out;
+        background-color: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+        box-sizing: border-box;
     }
-
-    .quiz-form input:focus, .quiz-form select:focus, .quiz-form textarea:focus {
+    
+    .quiz-form input:focus, 
+    .quiz-form select:focus, 
+    .quiz-form textarea:focus {
         outline: none;
-        border: 2px solidrgb(179, 0, 12);
-        box-shadow: 0 0 5px rgba(187, 0, 56, 0.5);
+        border-color: var(--primary-color);
+        background-color: rgba(187, 134, 252, 0.05);
+        box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.15);
     }
-
+    
+    .quiz-form .helptext {
+        display: block;
+        font-size: 12px;
+        color: var(--text-hint);
+        margin-top: 5px;
+    }
+    
     .quiz-form button {
-        background-color:rgb(255, 0, 17);
-        color: white;
-        font-size: 18px;
-        font-weight: bold;
-        padding: 12px;
+        background: linear-gradient(135deg, var(--primary-color), #9c64f7);
+        color: #000;
+        font-weight: 600;
         border: none;
-        border-radius: 5px;
+        padding: 16px;
+        font-size: 16px;
+        border-radius: 12px;
         cursor: pointer;
-        transition: background 0.3s ease-in-out;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(187, 134, 252, 0.2);
+        margin-top: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
     }
-
+    
     .quiz-form button:hover {
-        background-color:rgb(179, 0, 57);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(187, 134, 252, 0.3);
+    }
+    
+    .quiz-form button:active {
+        transform: translateY(-1px);
+    }
+    
+    .quiz-form ul.errorlist {
+        color: var(--accent-color);
+        padding-left: 20px;
+        margin: 5px 0 0;
+        font-size: 14px;
+        list-style-type: circle;
+    }
+    
+    .form-footer {
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        text-align: center;
+        color: var(--text-hint);
+        font-size: 14px;
+    }
+    
+    /* Animation */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .quiz-container {
+        animation: fadeInUp 0.6s ease-out;
     }
 </style>
 
-<div class="quiz-container">
-    <h2>Create a New Quiz</h2>
-    <form method="post" class="quiz-form">
-        {% csrf_token %}
-        {{ quiz_form.as_p }}
-        <button type="submit">📝 Create Quiz</button>
-    </form>
+<div class="create-page">
+    <div class="quiz-container">
+        <div class="quiz-header">
+            <h2>Create a New Quiz</h2>
+            <p>Design your quiz with engaging questions and challenge your friends</p>
+        </div>
+        
+        <div class="quiz-form-container">
+            <form method="post" class="quiz-form">
+                {% csrf_token %}
+                
+                {% for field in quiz_form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="helptext">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% if field.errors %}
+                            <ul class="errorlist">
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                <button type="submit">
+                    <span>✨</span>
+                    Create Quiz
+                </button>
+                
+                <div class="form-footer">
+                    You can add questions to your quiz after creation
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}

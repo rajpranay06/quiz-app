@@ -1,0 +1,471 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  :root {
+    --primary-bg: #121212;
+    --secondary-bg: #1e1e1e;
+    --card-bg: #252525;
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --border-color: #333333;
+    --hover-bg: #333333;
+    --table-header-bg: #2c2c2c;
+    --table-stripe-bg: #2a2a2a;
+    --progress-bg: #3a3a3a;
+    --success-color: #4caf50;
+    --danger-color: #f44336;
+    --warning-color: #ff9800;
+    --info-color: #2196f3;
+    --primary-color: #7b68ee;
+  }
+
+  body {
+    background-color: var(--primary-bg);
+    color: var(--text-primary);
+  }
+
+  .stats-container {
+    padding: 30px 15px;
+  }
+
+  .content-card {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    transition: transform 0.3s;
+  }
+
+  .content-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .content-header {
+    padding: 15px 20px;
+    background-color: var(--secondary-bg);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .content-header h5 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .content-body {
+    padding: 20px;
+  }
+
+  .content-body p {
+    color: var(--text-secondary);
+  }
+
+  .stat-card {
+    text-align: center;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: var(--secondary-bg);
+    transition: all 0.3s;
+    height: 100%;
+  }
+
+  .stat-card:hover {
+    background-color: var(--hover-bg);
+  }
+
+  .stat-card h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+  }
+
+  .stat-card p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0;
+  }
+
+  .stat-icon {
+    font-size: 2.5rem;
+    opacity: 0.8;
+    margin-bottom: 10px;
+  }
+
+  .chart-container {
+    position: relative;
+    height: 240px;
+  }
+
+  .stats-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .stats-table th {
+    padding: 12px 15px;
+    text-align: left;
+    background-color: var(--table-header-bg);
+    color: var(--text-primary);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .stats-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-secondary);
+  }
+
+  .stats-table tbody tr:nth-child(even) {
+    background-color: var(--table-stripe-bg);
+  }
+
+  .stats-table tbody tr:hover {
+    background-color: var(--hover-bg);
+  }
+
+  .empty-state {
+    padding: 30px;
+    text-align: center;
+    color: var(--text-secondary);
+  }
+
+  .empty-state .icon {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 15px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+  }
+
+  .progress {
+    height: 10px;
+    background-color: var(--progress-bg);
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    transition: width 0.6s ease;
+  }
+
+  .badge {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.75rem;
+  }
+
+  .bg-success {
+    background-color: var(--success-color) !important;
+  }
+
+  .bg-primary {
+    background-color: var(--primary-color) !important;
+  }
+
+  .bg-danger {
+    background-color: var(--danger-color) !important;
+  }
+
+  .bg-warning {
+    background-color: var(--warning-color) !important;
+  }
+
+  .bg-info {
+    background-color: var(--info-color) !important;
+  }
+
+  /* Override Chart.js tooltip styling */
+  canvas {
+    filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.15));
+  }
+</style>
+
+<div class="container stats-container">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="mb-4">Your Quiz Analytics</h2>
+      <p class="text-secondary mb-4">See your progress and get insights about your quiz performance</p>
+    </div>
+  </div>
+
+  <!-- First row with key stats -->
+  <div class="row mb-4">
+    <!-- Quizzes Taken -->
+    <div class="col-md-4 mb-4 mb-md-0">
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <h2>{{ stats.quizzes_taken }}</h2>
+        <p>Quizzes Taken</p>
+      </div>
+    </div>
+    
+    <!-- Questions Answered -->
+    <div class="col-md-4 mb-4 mb-md-0">
+      <div class="stat-card">
+        <div class="stat-icon">❓</div>
+        <h2>{{ stats.questions_answered }}</h2>
+        <p>Questions Answered</p>
+      </div>
+    </div>
+    
+    <!-- Average Score -->
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="stat-icon">📊</div>
+        <h2>{{ stats.avg_percentage }}%</h2>
+        <p>Average Score</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Second row with charts/data -->
+  <div class="row mb-4">
+    <!-- Performance Chart -->
+    <div class="col-lg-8 mb-4">
+      <div class="content-card h-100">
+        <div class="content-header">
+          <h5>Your Quiz Performance</h5>
+        </div>
+        <div class="content-body">
+          {% if performance_data %}
+            <div class="chart-container">
+              <canvas id="performanceChart"></canvas>
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <span class="icon">📊</span>
+              <p>Take some quizzes to see your performance chart!</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Score Stats -->
+    <div class="col-lg-4 mb-4">
+      <div class="content-card h-100">
+        <div class="content-header">
+          <h5>Score Statistics</h5>
+        </div>
+        <div class="content-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span>Highest Score:</span>
+            <span class="badge bg-success">{{ highest_score }}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span>Average Score:</span>
+            <span class="badge bg-primary">{{ avg_score }}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span>Lowest Score:</span>
+            <span class="badge bg-danger">{{ lowest_score }}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span>Total Attempts:</span>
+            <span class="badge bg-info">{{ total_attempts }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Recent Attempts -->
+    <div class="col-lg-6 mb-4">
+      <div class="content-card h-100">
+        <div class="content-header">
+          <h5>Recent Quiz Attempts</h5>
+        </div>
+        <div class="content-body">
+          {% if recent_attempts %}
+            <div class="table-container">
+              <table class="stats-table">
+                <thead>
+                  <tr>
+                    <th>Quiz</th>
+                    <th>Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for attempt in recent_attempts %}
+                    <tr>
+                      <td>{{ attempt.quiz.title }}</td>
+                      <td>
+                        <span class="badge {% if attempt.percentage >= 80 %}bg-success{% elif attempt.percentage >= 60 %}bg-info{% elif attempt.percentage >= 40 %}bg-warning{% else %}bg-danger{% endif %}">
+                          {{ attempt.percentage }}%
+                        </span>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <span class="icon">🎮</span>
+              <p>No quiz attempts yet. Start playing!</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Created Quizzes Stats -->
+    <div class="col-lg-6 mb-4">
+      <div class="content-card h-100">
+        <div class="content-header">
+          <h5>Your Created Quizzes</h5>
+        </div>
+        <div class="content-body">
+          {% if created_quizzes_data %}
+            <div class="table-container">
+              <table class="stats-table">
+                <thead>
+                  <tr>
+                    <th>Quiz Title</th>
+                    <th>Plays</th>
+                    <th>Avg. Score</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for quiz in created_quizzes_data %}
+                    <tr>
+                      <td>{{ quiz.title }}</td>
+                      <td>{{ quiz.attempts }}</td>
+                      <td>
+                        <div class="progress">
+                          <div class="progress-bar bg-primary" role="progressbar" style="width: {{ quiz.avg_score }}%" 
+                               aria-valuenow="{{ quiz.avg_score }}" aria-valuemin="0" aria-valuemax="100">
+                            {{ quiz.avg_score }}%
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="empty-state">
+              <span class="icon">✏️</span>
+              <p>You haven't created any quizzes yet.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Performance by Quiz Table -->
+  <div class="content-card mb-4">
+    <div class="content-header">
+      <h5>Detailed Quiz Performance</h5>
+    </div>
+    <div class="content-body p-0">
+      <div class="table-container">
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Quizzes</th>
+              <th>Performance</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for category in category_performance %}
+              <tr>
+                <td>{{ category.name }}</td>
+                <td>{{ category.count }}</td>
+                <td>
+                  <div class="progress">
+                    <div class="progress-bar {% if category.avg_score >= 80 %}bg-success{% elif category.avg_score >= 60 %}bg-info{% elif category.avg_score >= 40 %}bg-warning{% else %}bg-danger{% endif %}" 
+                         role="progressbar" style="width: {{ category.avg_score }}%" 
+                         aria-valuenow="{{ category.avg_score }}" aria-valuemin="0" aria-valuemax="100">
+                      {{ category.avg_score }}%
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Include Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('performanceChart');
+    
+    {% if performance_data %}
+    const performanceChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: {{ performance_data.labels|safe }},
+        datasets: [{
+          label: 'Quiz Score (%)',
+          data: {{ performance_data.scores|safe }},
+          backgroundColor: 'rgba(123, 104, 238, 0.6)',
+          borderColor: 'rgba(123, 104, 238, 1)',
+          borderWidth: 1,
+          borderRadius: 4,
+          hoverBackgroundColor: 'rgba(123, 104, 238, 0.8)'
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          tooltip: {
+            backgroundColor: 'rgba(20, 20, 20, 0.9)',
+            titleColor: '#ffffff',
+            bodyColor: '#ffffff',
+            borderColor: 'rgba(123, 104, 238, 0.5)',
+            borderWidth: 1,
+            padding: 10,
+            displayColors: false
+          },
+          legend: {
+            labels: {
+              color: 'var(--text-primary)'
+            }
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            grid: {
+              color: 'rgba(255, 255, 255, 0.1)'
+            },
+            ticks: {
+              color: 'var(--text-secondary)'
+            }
+          },
+          x: {
+            grid: {
+              color: 'rgba(255, 255, 255, 0.1)'
+            },
+            ticks: {
+              color: 'var(--text-secondary)'
+            }
+          }
+        }
+      }
+    });
+    {% endif %}
+  });
+</script>
+
+{% endblock %} 

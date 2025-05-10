@@ -1,0 +1,266 @@
+/* Dark Theme Variables */
+:root {
+    --dark-bg: #121212;
+    --dark-surface: #1e1e1e;
+    --dark-surface-lighter: #2d2d2d;
+    --dark-surface-darker: #181818;
+    --dark-border: #333333;
+    --dark-text-primary: #e0e0e0;
+    --dark-text-secondary: #a0a0a0;
+    --dark-accent: #bb86fc;
+    --dark-accent-lighter: rgba(187, 134, 252, 0.2);
+    --dark-accent-contrast: #000;
+    --dark-error: #cf6679;
+    --dark-success: #03dac5;
+    --dark-warning: #ffb74d;
+    --dark-danger: #ff4d4d;
+}
+
+/* Dark Mode Base Styles */
+body {
+    background-color: var(--dark-bg);
+    color: var(--dark-text-primary);
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(137, 87, 229, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 75% 75%, rgba(3, 218, 198, 0.05) 0%, transparent 40%);
+}
+
+/* Containers */
+.container, .card, .modal-content {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--dark-text-primary);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    color: var(--dark-text-primary);
+}
+
+p, span {
+    color: var(--dark-text-secondary);
+}
+
+a {
+    color: var(--dark-accent);
+}
+
+a:hover {
+    color: #c99ffe;
+}
+
+/* Form Elements */
+input, textarea, select {
+    background-color: var(--dark-surface-darker);
+    color: var(--dark-text-primary);
+    border: 1px solid var(--dark-border);
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: var(--dark-accent);
+    box-shadow: 0 0 0 3px var(--dark-accent-lighter);
+}
+
+::placeholder {
+    color: var(--dark-text-secondary);
+    opacity: 0.7;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--dark-accent);
+    color: var(--dark-accent-contrast);
+    border-color: var(--dark-accent);
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #c99ffe;
+    border-color: #c99ffe;
+}
+
+.btn-success {
+    background-color: var(--dark-success);
+    color: var(--dark-accent-contrast);
+    border-color: var(--dark-success);
+}
+
+.btn-success:hover, .btn-success:focus {
+    background-color: #04e8d2;
+    border-color: #04e8d2;
+}
+
+.btn-danger {
+    background-color: var(--dark-danger);
+    color: white;
+    border-color: var(--dark-danger);
+}
+
+.btn-danger:hover, .btn-danger:focus {
+    background-color: #ff6666;
+    border-color: #ff6666;
+}
+
+/* Alerts and Messages */
+.alert-success, .message-success {
+    background-color: rgba(3, 218, 197, 0.2);
+    color: var(--dark-success);
+    border-color: var(--dark-success);
+}
+
+.alert-danger, .message-error {
+    background-color: rgba(207, 102, 121, 0.2);
+    color: var(--dark-error);
+    border-color: var(--dark-error);
+}
+
+.alert-warning, .message-warning {
+    background-color: rgba(255, 183, 77, 0.2);
+    color: var(--dark-warning);
+    border-color: var(--dark-warning);
+}
+
+/* Tables */
+.table {
+    color: var(--dark-text-secondary);
+}
+
+.table thead th {
+    color: var(--dark-text-primary);
+    border-bottom-color: var(--dark-border);
+}
+
+.table td, .table th {
+    border-color: var(--dark-border);
+}
+
+/* Progress Bars */
+.progress {
+    background-color: var(--dark-border);
+}
+
+.progress-bar {
+    background-color: var(--dark-accent);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--dark-surface);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--dark-surface-lighter);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-accent);
+}
+
+/* Quiz Options Specific Styles */
+.option-label,
+.option-row,
+.options-container {
+    background-color: var(--dark-surface-darker);
+    color: var(--dark-text-primary);
+    border-color: var(--dark-border);
+}
+
+.option-label:hover,
+.option-row:hover {
+    background-color: var(--dark-surface-lighter);
+    border-color: var(--dark-accent);
+}
+
+.option-label.selected {
+    background-color: var(--dark-accent-lighter);
+    border-color: var(--dark-accent);
+    color: var(--dark-accent);
+}
+
+.option-correct {
+    accent-color: var(--dark-success);
+}
+
+.option-correct-label {
+    color: var(--dark-success);
+}
+
+/* Other Quiz Elements */
+.question-section {
+    background-color: var(--dark-surface-lighter);
+    border-color: var(--dark-border);
+}
+
+.question-container,
+.quiz-container,
+.quiz-update-container {
+    background-color: var(--dark-surface);
+}
+
+.section-header {
+    color: var(--dark-accent);
+    border-left-color: var(--dark-accent);
+}
+
+/* Override Bootstrap Styles */
+.form-control {
+    background-color: var(--dark-surface-darker);
+    color: var(--dark-text-primary);
+    border-color: var(--dark-border);
+}
+
+.form-control:focus {
+    background-color: var(--dark-surface-darker);
+    color: var(--dark-text-primary);
+    border-color: var(--dark-accent);
+    box-shadow: 0 0 0 0.25rem var(--dark-accent-lighter);
+}
+
+.nav-link {
+    color: var(--dark-text-primary);
+}
+
+.nav-link:hover,
+.nav-link:focus {
+    color: var(--dark-accent);
+}
+
+.navbar {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+.dropdown-menu {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+
+.dropdown-item {
+    color: var(--dark-text-primary);
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: var(--dark-surface-lighter);
+    color: var(--dark-accent);
+}
+
+.list-group-item {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--dark-text-primary);
+}
+
+.modal-header, .modal-footer {
+    border-color: var(--dark-border);
+}
+
+.close {
+    color: var(--dark-text-primary);
+} 

@@ -3,11 +3,15 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: linear-gradient(90deg, #3a7bd5, #00d2ff);
+        background: linear-gradient(90deg, rgba(30, 30, 30, 0.95), rgba(20, 20, 20, 0.95));
+        backdrop-filter: blur(10px);
         padding: 16px 30px;
-        border-radius: 8px;
-        box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-        margin-bottom: 20px;
+        border-radius: 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        margin-bottom: 30px;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
     }
     
     .navbar-brand {
@@ -16,70 +20,151 @@
         text-decoration: none;
         font-size: 24px;
         font-weight: 800;
-        color: white;
+        color: var(--primary-color);
         letter-spacing: 1.2px;
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-        transition: transform 0.3s ease;
+        text-shadow: 0px 0px 15px rgba(187, 134, 252, 0.3);
+        transition: all 0.3s ease;
     }
     
     .navbar-brand:hover {
         transform: scale(1.05);
+        text-decoration: none;
+        color: var(--primary-color);
     }
     
     .navbar-brand .logo-emoji {
         font-size: 28px;
         margin: 0 8px;
+        filter: drop-shadow(0px 0px 8px rgba(187, 134, 252, 0.3));
+    }
+    
+    .navbar-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
     }
     
     .navbar-auth {
+        display: flex;
+        gap: 12px;
+    }
+    
+    .navbar a.nav-link {
+        color: var(--text-secondary);
+        font-size: 16px;
+        font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
         position: relative;
+    }
+    
+    .navbar a.nav-link:hover {
+        color: var(--text-primary);
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .navbar a.nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--primary-color);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+    
+    .navbar a.nav-link:hover::after {
+        width: 80%;
     }
     
     .navbar a.auth-button {
         text-decoration: none;
-        font-size: 16px;
+        font-size: 15px;
         font-weight: 600;
-        color: white;
-        background-color: rgba(0, 0, 0, 0.15);
-        padding: 10px 20px;
-        border-radius: 50px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
+        padding: 8px 18px;
+        border-radius: 30px;
         transition: all 0.3s ease;
         display: inline-flex;
         align-items: center;
+        gap: 8px;
+    }
+    
+    .navbar a.logout-button {
+        color: #000;
+        background-color: var(--secondary-color);
+        border: none;
+    }
+    
+    .navbar a.login-button {
+        color: #000;
+        background-color: var(--primary-color);
+        border: none;
+    }
+    
+    .navbar a.stats-button {
+        color: #000;
+        background-color: var(--secondary-color);
+        border: none;
     }
     
     .navbar a.auth-button:hover {
-        background-color: rgba(0, 0, 0, 0.25);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-    
-    .navbar a.auth-button:active {
-        transform: translateY(1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
     
     .auth-icon {
-        margin-right: 8px;
+        font-size: 16px;
+    }
+    
+    @media (max-width: 768px) {
+        .navbar {
+            padding: 12px 15px;
+        }
+        
+        .navbar-brand {
+            font-size: 20px;
+        }
+        
+        .navbar-brand .logo-emoji {
+            font-size: 22px;
+        }
+        
+        .navbar a.auth-button {
+            font-size: 14px;
+            padding: 6px 12px;
+        }
     }
 </style>
 
 <nav class="navbar">
-    <a href="/" class="navbar-brand">
+    <a href="{% url 'home' %}" class="navbar-brand">
         <span class="logo-emoji">🎯</span>
         Mind Clash
         <span class="logo-emoji">⚡</span>
     </a>
     
-    <div class="navbar-auth">
+    <div class="navbar-links">
         {% if request.user.is_authenticated %}
-            <a href="{% url 'logout' %}" class="auth-button">
-                <span class="auth-icon">🚪</span>Logout
-            </a>
-        {% else %}
-            <a href="{% url 'login' %}" class="auth-button">
-                <span class="auth-icon">🔑</span>Login
-            </a>
+        <a href="{% url 'lobby' %}" class="nav-link">Dashboard</a>
+        <a href="{% url 'join_quiz' %}" class="nav-link">Quizzes</a>
         {% endif %}
+        
+        <div class="navbar-auth">
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'user_stats' %}" class="auth-button stats-button">
+                    <span class="auth-icon">📊</span>My Stats
+                </a>
+                <a href="{% url 'logout' %}" class="auth-button logout-button">
+                    <span class="auth-icon">🚪</span>Logout
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="auth-button login-button">
+                    <span class="auth-icon">🔑</span>Login
+                </a>
+            {% endif %}
+        </div>
     </div>
 </nav>

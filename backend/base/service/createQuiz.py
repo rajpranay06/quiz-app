@@ -2,8 +2,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from ..forms import QuizForm, QuestionForm
-from ..models import Quiz
+from django.contrib import messages
+from ..forms import QuizForm, QuestionForm, OptionFormSet
+from ..models import Quiz, Question, Option
 from django.contrib.auth.decorators import login_required
 
 # API - http://127.0.0.1:8000/home/  (GET request)
@@ -37,6 +38,33 @@ def add_questions(request, quiz_id):
             question = question_form.save(commit=False)
             question.quiz = quiz
             question.save()
+            
+            # Process formset data manually since we didn't create the question yet when rendering
+            option_count = int(request.POST.get('option_count', 0))
+            has_correct = False
+            
+            for i in range(option_count):
+                option_text = request.POST.get(f'option_text_{i}')
+                is_correct = request.POST.get(f'is_correct_{i}') == 'on'
+                
+                if option_text:  # Only create options that have text
+                    Option.objects.create(
+                        question=question,
+                        text=option_text if option_text.strip() else f"Option {i + 1}",
+                        is_correct=is_correct
+                    )
+                    
+                    if is_correct:
+                        has_correct = True
+            
+            # Ensure at least one option is marked as correct
+            if not has_correct and option_count > 0:
+                messages.warning(request, "No correct answer was selected. The first option has been set as correct.")
+                first_option = question.options.first()
+                if first_option:
+                    first_option.is_correct = True
+                    first_option.save()
+            
             if 'complete_quiz' in request.POST:
                 return redirect('lobby')
             else:
@@ -45,6 +73,9 @@ def add_questions(request, quiz_id):
     else:
         question_form = QuestionForm()
 
-    return render(request, 'base/add_questions.html', {"quiz": quiz, "question_form": question_form})
+    return render(request, 'base/add_questions.html', {
+        "quiz": quiz, 
+        "question_form": question_form,
+    })
     
     
