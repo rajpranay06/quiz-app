@@ -81,9 +81,10 @@
     
     .hero-button.primary {
         background-color: var(--primary-color);
-        color: #000;
+        color: #000 !important;  /* <-- force it to black */
         box-shadow: 0 5px 20px rgba(187, 134, 252, 0.3);
     }
+    
     
     .hero-button.secondary {
         background-color: transparent;
@@ -95,10 +96,10 @@
         transform: translateY(-5px);
         text-decoration: none;
     }
-    
+
     .hero-button.primary:hover {
         box-shadow: 0 8px 25px rgba(187, 134, 252, 0.4);
-        color: #000;
+        color: #000 !important;  /* <-- stay black even when hovered */
     }
     
     .hero-button.secondary:hover {
