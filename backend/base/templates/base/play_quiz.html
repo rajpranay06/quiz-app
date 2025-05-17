@@ -2,103 +2,126 @@
 
 {% block content %}
 <style>
+    :root {
+        --dark-bg: #121212;
+        --dark-surface: #1e1e1e;
+        --dark-surface-lighter: #2d2d2d;
+        --dark-border: #333333;
+        --dark-text-primary: #e0e0e0;
+        --dark-text-secondary: #a0a0a0;
+        --dark-accent: #bb86fc;
+        --dark-accent-lighter: rgba(187, 134, 252, 0.2);
+        --dark-accent-contrast: #000;
+        --dark-error: #cf6679;
+        --dark-success: #03dac5;
+    }
+    
+    body {
+        background-color: var(--dark-bg);
+        color: var(--dark-text-primary);
+    }
+    
     .quiz-container {
         max-width: 800px;
         margin: 40px auto;
         padding: 30px;
         text-align: center;
-        background: #ffffff;
+        background-color: var(--dark-surface);
         border-radius: 15px;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
     
     .quiz-header {
         margin-bottom: 30px;
         padding-bottom: 20px;
-        border-bottom: 2px solid #f0f0f0;
+        border-bottom: 2px solid var(--dark-border);
     }
     
     h2 {
-        color: #2c3e50;
+        color: var(--dark-accent);
         font-size: 28px;
         margin-bottom: 10px;
     }
     
     .quiz-description {
-        color: #7f8c8d;
+        color: var(--dark-text-secondary);
         font-size: 16px;
         line-height: 1.5;
     }
     
     .question {
         margin-bottom: 30px;
-        background: #f8f9fa;
+        background: var(--dark-surface-lighter);
         padding: 20px;
         border-radius: 10px;
         text-align: left;
+        border-left: 5px solid var(--dark-accent);
     }
     
     .question h3 {
-        color: #34495e;
+        color: var(--dark-text-primary);
         margin-bottom: 15px;
         font-size: 18px;
         font-weight: 600;
     }
     
-    .options {
-        display: grid;
-        gap: 10px;
+    .option-container {
+        margin-bottom: 15px;
     }
     
-    .options label {
+    .option-text {
         display: flex;
         align-items: center;
-        background: white;
+        flex-wrap: wrap;
+    }
+    
+    .multiple-choice-info {
+        display: block;
+        font-size: 14px;
+        color: var(--dark-error);
+        font-style: italic;
+        margin-bottom: 10px;
+    }
+    
+    .option-checkbox {
+        margin-right: 15px;
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        vertical-align: middle;
+        accent-color: var(--dark-accent);
+    }
+    
+    .option-label {
+        flex: 1;
+        background: var(--dark-surface);
         padding: 15px;
         border-radius: 8px;
         cursor: pointer;
-        border: 1px solid #e0e0e0;
+        border: 1px solid var(--dark-border);
         transition: all 0.3s ease;
         font-size: 16px;
         position: relative;
-        padding-left: 50px;
+        margin-left: 0;
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        color: var(--dark-text-primary);
     }
     
-    .options input {
-        display: none;
+    .option-label:hover {
+        background: var(--dark-surface-lighter);
+        border-color: var(--dark-accent);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(187, 134, 252, 0.2);
     }
     
-    .options label:before {
-        content: '';
-        position: absolute;
-        left: 15px;
-        width: 20px;
-        height: 20px;
-        border: 2px solid #ddd;
-        border-radius: 50%;
-        transition: all 0.3s ease;
-    }
-    
-    .options label:hover {
-        background: #f0f8ff;
-        border-color: #3498db;
-    }
-    
-    .options label:hover:before {
-        border-color: #3498db;
-    }
-    
-    .options input:checked + label {
-        background: #e8f4fd;
-        border-color: #3498db;
-        color: #2980b9;
-    }
-    
-    .options input:checked + label:before {
-        border-color: #3498db;
-        background: #3498db;
-        box-shadow: inset 0 0 0 4px #fff;
+    .option-label.selected {
+        background: var(--dark-accent-lighter);
+        border-color: var(--dark-accent);
+        color: var(--dark-accent);
     }
     
     .submit-container {
@@ -106,8 +129,8 @@
     }
     
     .submit-btn {
-        background-color: #3498db;
-        color: white;
+        background: var(--dark-accent);
+        color: var(--dark-accent-contrast);
         padding: 14px 28px;
         font-size: 16px;
         border: none;
@@ -116,13 +139,13 @@
         transition: 0.3s;
         font-weight: 600;
         letter-spacing: 0.5px;
-        box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     }
     
     .submit-btn:hover {
-        background-color: #2980b9;
+        filter: brightness(1.1);
         transform: translateY(-2px);
-        box-shadow: 0 6px 8px rgba(52, 152, 219, 0.3);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
     }
     
     .submit-btn:active {
@@ -139,15 +162,15 @@
             padding: 15px;
         }
         
-        .options label {
-            padding: 12px 12px 12px 45px;
+        .option-label {
+            padding: 12px;
             font-size: 15px;
         }
     }
     
     .progress-bar {
         height: 6px;
-        background: #f0f0f0;
+        background: var(--dark-border);
         border-radius: 3px;
         margin-bottom: 30px;
         overflow: hidden;
@@ -155,9 +178,16 @@
     
     .progress-fill {
         height: 100%;
-        background: linear-gradient(to right, #3498db, #2ecc71);
+        background: linear-gradient(to right, var(--dark-accent), var(--dark-success));
         width: 0%;
         transition: width 0.5s ease;
+    }
+    
+    .select-info {
+        color: var(--dark-accent);
+        font-size: 14px;
+        margin-bottom: 15px;
+        font-weight: 600;
     }
 </style>
 
@@ -176,18 +206,25 @@
         {% for question in questions %}
             <div class="question" data-question="{{ forloop.counter }}">
                 <h3>Question {{ forloop.counter }}: {{ question.text }}</h3>
+                
+                <!-- Just display info about multiple answer possibility for all questions -->
+                <span class="multiple-choice-info">* Select all correct answers</span>
+                
                 <div class="options">
-                    <input type="radio" name="question_{{ question.id }}" value="1" id="option1_{{ question.id }}">
-                    <label for="option1_{{ question.id }}">{{ question.option1 }}</label>
-
-                    <input type="radio" name="question_{{ question.id }}" value="2" id="option2_{{ question.id }}">
-                    <label for="option2_{{ question.id }}">{{ question.option2 }}</label>
-
-                    <input type="radio" name="question_{{ question.id }}" value="3" id="option3_{{ question.id }}">
-                    <label for="option3_{{ question.id }}">{{ question.option3 }}</label>
-
-                    <input type="radio" name="question_{{ question.id }}" value="4" id="option4_{{ question.id }}">
-                    <label for="option4_{{ question.id }}">{{ question.option4 }}</label>
+                    {% for option in question.options.all %}
+                    <div class="option-container">
+                        <div class="option-text">
+                            <input type="checkbox" 
+                                   name="question_{{ question.id }}" 
+                                   value="{{ option.id }}" 
+                                   id="option{{ option.id }}_{{ question.id }}"
+                                   class="option-checkbox">
+                            <label for="option{{ option.id }}_{{ question.id }}" class="option-label">
+                                {{ option.text }}
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         {% endfor %}
@@ -201,16 +238,72 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const form = document.getElementById('quiz-form');
-        const inputs = form.querySelectorAll('input[type="radio"]');
+        const checkboxes = form.querySelectorAll('input[type="checkbox"]');
         const progressFill = document.getElementById('progress-fill');
+        const questions = document.querySelectorAll('.question');
         const totalQuestions = {{ questions|length }};
         let answeredQuestions = new Set();
         
-        inputs.forEach(input => {
-            input.addEventListener('change', function() {
-                const questionId = this.name;
-                answeredQuestions.add(questionId);
+        // Fix any empty option labels
+        document.querySelectorAll('.option-label').forEach(label => {
+            if (label.innerHTML.trim() === '') {
+                // Try to get the option text from the data attribute
+                const checkboxId = label.getAttribute('for');
+                const checkbox = document.getElementById(checkboxId);
+                if (checkbox) {
+                    const optionId = checkbox.value;
+                    // Set a placeholder text if the option is truly empty
+                    label.innerHTML = `Option ${optionId}`;
+                }
+            }
+        });
+        
+        // Make clicking on the label also check the checkbox
+        const optionLabels = document.querySelectorAll('.option-label');
+        optionLabels.forEach(label => {
+            label.addEventListener('click', function() {
+                const checkboxId = this.getAttribute('for');
+                const checkbox = document.getElementById(checkboxId);
+                checkbox.checked = !checkbox.checked;
+                updateSelectedClass(this, checkbox.checked);
                 
+                // Trigger the change event to update progress
+                const event = new Event('change');
+                checkbox.dispatchEvent(event);
+            });
+        });
+        
+        // Add selected class to labels of checked checkboxes
+        function updateSelectedClass(label, isChecked) {
+            if (isChecked) {
+                label.classList.add('selected');
+            } else {
+                label.classList.remove('selected');
+            }
+        }
+        
+        // Update progress when a checkbox is changed
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const questionName = this.name;
+                const questionDiv = this.closest('.question');
+                
+                // Update the selected class on the label
+                const label = document.querySelector(`label[for="${this.id}"]`);
+                updateSelectedClass(label, this.checked);
+                
+                // Add this question to answered set if at least one option is selected
+                const questionHasChecked = Array.from(
+                    questionDiv.querySelectorAll('input[type="checkbox"]')
+                ).some(cb => cb.checked);
+                
+                if (questionHasChecked) {
+                    answeredQuestions.add(questionName);
+                } else {
+                    answeredQuestions.delete(questionName);
+                }
+                
+                // Update progress bar
                 const progress = (answeredQuestions.size / totalQuestions) * 100;
                 progressFill.style.width = progress + '%';
             });

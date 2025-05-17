@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib import messages
@@ -18,10 +19,10 @@ login_schema = openapi.Schema(
     required=['username', 'password']
 )
 
-# API - http://127.0.0.1:8000/login/ (POST request)
+# Web route - http://127.0.0.1:8000/login/
 def loginPage(request):
     """
-    User login API.
+    User login page.
     """
     page = "login"
     
@@ -34,15 +35,14 @@ def loginPage(request):
         
         try:
             user = User.objects.get(username=username)
-        except:
-            pass
-            #messages.error(request, 'User not found')
+        except User.DoesNotExist:
+            messages.error(request, 'User not found')
         
         user = authenticate(request, username=username, password=password)
         
         if user is not None:
             login(request, user)
-            messages.success(request, "Hello {username}".format(username=username))
+            messages.success(request, f"Hello {username}!")
             return redirect('lobby')
         else:
             messages.error(request, 'Invalid credentials')
