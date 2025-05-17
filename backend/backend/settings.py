@@ -90,6 +90,11 @@ SIMPLE_JWT = {
     'JTI_CLAIM': 'jti',
 }
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://quiz-app-t5v1.onrender.com",
+]
+CORS_ALLOW_ALL_ORIGINS = True
+
 # Swagger settings
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS': {
