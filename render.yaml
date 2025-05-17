@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: quiz-backend
+    env: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: gunicorn backend.wsgi:application
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+    autoDeploy: true
+    plan: free
+    buildFilter:
+      paths:
+        - backend/**
